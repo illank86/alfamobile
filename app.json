@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "sdkVersion": "23.0.0",
+    "androidStatusBar": {
+      "barStyle": "dark-content"
+    },
+    "orientation": "portrait"
+  }
+}
