@@ -11,7 +11,7 @@
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/illank86/Alfa-mobile"
+    "url": "https://github.com/illank86/alfamobile"
   },
   "scripts": {
     "start": "react-native-scripts start",
