@@ -6,6 +6,8 @@ import StoreDetail from '../storedetails';
 import AddSchedule from '../addschedule';
 import UpdateSchedule from '../updateschedule';
 
+//comment
+
 const Stack = StackNavigator({
     Home: {
         screen: Lists,       
