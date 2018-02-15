@@ -20,7 +20,6 @@ export default class Lists extends React.Component {
 
   static navigationOptions = { 
     title: 'Store List', 
-    header: null
   }
 
   componentWillMount() {
@@ -46,8 +45,8 @@ export default class Lists extends React.Component {
   renderActivity = () => {
     return(
         <View style={styles.activity}>
-            <ActivityIndicator size="large" color="#9E9E9E" /> 
-            <Text style={{fontSize: 20, color: '#9E9E9E'}}>Loading...</Text>
+            <ActivityIndicator size="large" color="#02309F" /> 
+            <Text style={{fontSize: 20, color: '#02309F'}}>Loading...</Text>
         </View>
     )
   }
@@ -96,11 +95,9 @@ export default class Lists extends React.Component {
       return (
         <View style={styles.container}>
           <View style={styles.content}>
-          <Header
-            statusBarProps={{ barStyle: 'light-content', backgroundColor:'#2c3e50' }}
-            backgroundColor="#2c3e50"
-            leftComponent={{ icon: 'menu', color: '#fff' }}
-            centerComponent={{ text: 'DASHBOARD', style: { color: '#fff' } }}
+          <StatusBar
+            backgroundColor="white"
+            barStyle="dark-content"
           />
           {this.props.store.listStore.length == 0 ?          
             <TouchableOpacity style={styles.activity} onPress={()=>this.props.store.fetchAll(msg=>null)}>
@@ -111,12 +108,12 @@ export default class Lists extends React.Component {
               useFlatList
               data={this.props.store.listStore}
               renderItem={ (data, rowMap) => (
-                <TouchableHighlight underlayColor='#CFD8DC' style={styles.ListItem} onPress={() => navigate('StoreDetail', {id: data.item.id_store, name:data.item.name, topic:data.item.topic})}>
+                <TouchableHighlight underlayColor='#CFD8DC' style={styles.ListItem} onPress={() => navigate('StoreDetail', {id: data.item.id_store, name:data.item.name, topic:data.item.topic })}>
                 <View style={styles.item}>                        
                   <Avatar
                       medium 
                       rounded                     
-                      source={{uri: "https://storage.googleapis.com/snapchat-lens-assets/f1a09194-f02d-43ed-92b8-62e843179ff0/lensStudio/Guides/img/creating_an_icon_world_example.png"}}
+                      source={require('../assets/icons.png')}
                       onPress={() => alert("Works!")}
                       activeOpacity={0.7}
                     />
@@ -128,8 +125,7 @@ export default class Lists extends React.Component {
                 </TouchableHighlight>
               )}
               keyExtractor = {data => data.id_store}
-              ItemSeparatorComponent={this.renderSeparator}
-              ListHeaderComponent={this.renderHeader}
+              ItemSeparatorComponent={this.renderSeparator}            
               renderHiddenItem={ (data, rowMap) => (
                 <View style={styles.rowBack}>
                     <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(data.item.id_store) }>
@@ -164,7 +160,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 50,
     height: 50,
-    backgroundColor: "#E65100",
+    backgroundColor: '#EF5350',
     borderRadius: 50,
     bottom: 10,
     right: 10,
@@ -184,7 +180,8 @@ const styles = StyleSheet.create({
   activity: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor: '#fff'
   },
   ListItem: { 
     backgroundColor: 'white',

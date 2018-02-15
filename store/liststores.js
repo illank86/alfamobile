@@ -73,6 +73,29 @@ class ObservableListStore {
         })       
     }
 
+    updateSchedule(clb, item, {...myData}) {
+        let datas = myData;
+        
+        fetch(`https://glacial-cliffs-13214.herokuapp.com/api/data/update-schedule/${item}`, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datas)
+        })
+        .then(res => res.json())
+        .then(data => { 
+           if(data.error) {
+               clb(data.error);
+           } else {
+              clb(data.message);
+              this.getOneSchedule(datas.id_store, (msg) => {
+                  return null
+              })             
+           }
+        })       
+    }
 
     deleteOneStore(item, clb) {
         fetch(`https://glacial-cliffs-13214.herokuapp.com/api/data/delete-store/${item}`, {

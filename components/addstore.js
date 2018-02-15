@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToastAndroid, Text, StyleSheet, View, TextInput } from 'react-native';
+import { ToastAndroid, Text, StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage, Button } from 'react-native-elements';
 
 import { observer, inject } from 'mobx-react/native';
@@ -26,13 +26,12 @@ export default class AddStore extends React.Component {
    
     static navigationOptions = { 
         title: 'Add Store',
-        headerTintColor: 'white',
+        headerTintColor: '#000',
         headerStyle: {
-            backgroundColor: '#2c3e50', 
-            elevation: null
+            backgroundColor: '#fff', 
         },
         headerTitleStyle: {
-            color: '#fff'
+            color: '#000'
         }     
     }
 
@@ -121,15 +120,15 @@ export default class AddStore extends React.Component {
                       {this.state.errorTopic == true ?<FormValidationMessage>
                         {'Topic is required'}
                     </FormValidationMessage> : null } 
-
-                <Button
-                    containerViewStyle={{marginTop: 25}}
-                    large
-                    raised
-                    onPress={this.addStore.bind(this)}
-                    backgroundColor='#607D8B'
-                    icon={{name: 'add'}}
-                    title='ADD STORE' />
+                    
+                <View style={styles.btnView}>
+                    <TouchableOpacity 
+                    style={styles.addBtn}
+                    onPress={this.addStore}
+                    >
+                        <Text style={styles.addTxt}>Add Store</Text>
+                    </TouchableOpacity>
+                </View>
             </View>    
         )
     }
@@ -139,5 +138,22 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white'
+    },
+    btnView: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    addBtn: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 300,
+        height: 50,
+        backgroundColor: '#EF5350',
+        borderRadius: 50,
+        marginTop: 20
+    },
+    addTxt: {
+        fontSize: 20,
+        color: '#fff'
     }
 })

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToastAndroid, Text, StyleSheet, View, FlatList, TextInput, Picker } from 'react-native';
+import { ToastAndroid, Text, StyleSheet, View, FlatList, TextInput, Picker, TouchableOpacity } from 'react-native';
 import { Button, ListItem } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
@@ -41,13 +41,12 @@ export default class AddSchedule extends React.Component {
         const { state } = navigation;
         return {
             title: `Add ${state.params.name} Schedule`,
-            headerTintColor: 'white',
+            headerTintColor: '#000',
             headerStyle: {
-                backgroundColor: '#2c3e50', 
-                elevation: null
+                backgroundColor: '#fff', 
             },
             headerTitleStyle: {
-                color: '#fff'
+                color: '#000'
             } 
         }    
     }
@@ -56,8 +55,7 @@ export default class AddSchedule extends React.Component {
         const { state } = this.props.navigation;
         console.log(state.params.id);
         console.log(state.params.name);
-        console.log(state.params.topic);
-        
+        console.log(state.params.topic);        
     }
 
     backToSchedule = () => {
@@ -124,25 +122,48 @@ export default class AddSchedule extends React.Component {
             }
         };        
        
-        this.props.store.saveSchedule((msg) => {
-            if(msg == 'one or more field is empty') {
-                ToastAndroid.showWithGravityAndOffset(
-                    msg,
-                    ToastAndroid.LONG,
-                    ToastAndroid.BOTTOM,
-                    10,
-                    200
-                );
-            } else {
-                ToastAndroid.showWithGravityAndOffset(
-                    msg,
-                    ToastAndroid.LONG,
-                    ToastAndroid.BOTTOM,
-                    10,
-                    200
-                );
-            }            
-        }, {...datas})
+        if(this.props.store.schedules.length > 7) {
+            this.props.store.updateSchedule((msg) => {
+                if(msg == 'one or more field is empty') {
+                    ToastAndroid.showWithGravityAndOffset(
+                        msg,
+                        ToastAndroid.LONG,
+                        ToastAndroid.BOTTOM,
+                        10,
+                        200
+                    );
+                } else {
+                    ToastAndroid.showWithGravityAndOffset(
+                        msg,
+                        ToastAndroid.LONG,
+                        ToastAndroid.BOTTOM,
+                        10,
+                        200
+                    );
+                }            
+            }, state.params.id, {...datas})
+        } else {
+            this.props.store.saveSchedule((msg) => {
+                if(msg == 'one or more field is empty') {
+                    ToastAndroid.showWithGravityAndOffset(
+                        msg,
+                        ToastAndroid.LONG,
+                        ToastAndroid.BOTTOM,
+                        10,
+                        200
+                    );
+                } else {
+                    ToastAndroid.showWithGravityAndOffset(
+                        msg,
+                        ToastAndroid.LONG,
+                        ToastAndroid.BOTTOM,
+                        10,
+                        200
+                    );
+                }            
+            }, {...datas})
+        }
+
 
     }
 
@@ -192,7 +213,7 @@ export default class AddSchedule extends React.Component {
 
     render() {
         const { state } = this.props.navigation;
-        console.log(this.state.komponen)
+        console.log("ini state params edit ", state.params.edit)
         return( 
             <View style={styles.container}>
                 <ListItem
@@ -260,14 +281,14 @@ export default class AddSchedule extends React.Component {
                         </View> 
                     </View>
                 }
-                    <Button
-                        large
-                        raised
-                        onPress = {this.saveSchedule}
-                        iconRight={{name: 'save'}}
-                        containerViewStyle={{marginTop: 10}}                  
-                        backgroundColor='#607D8B'                   
-                        title='SAVE' /> 
+                    <View style={styles.saveView}>
+                        <TouchableOpacity 
+                            style={styles.saveBtn}
+                            onPress={this.saveSchedule}
+                            >
+                            {this.props.store.schedules.length > 7 ?<Text style={styles.saveTxt}>Update</Text> : <Text style={styles.saveTxt}>Save</Text>}
+                        </TouchableOpacity>
+                    </View>
 
                     <DateTimePicker
                         mode= 'time'
@@ -284,7 +305,8 @@ export default class AddSchedule extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,  
-        padding: 9   
+        padding: 9,
+        backgroundColor: '#fff'  
     }, 
     form: {
         flexDirection: 'row',
@@ -309,5 +331,22 @@ const styles = StyleSheet.create({
     picker: {
         backgroundColor: 'white',
         margin: 5,
+    },
+    saveView: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    saveBtn: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 300,
+        height: 50,
+        backgroundColor: '#EF5350',
+        borderRadius: 50,
+        marginTop: 20
+    },
+    saveTxt: {
+        fontSize: 20,
+        color: '#fff'
     }
 })

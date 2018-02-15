@@ -1,6 +1,7 @@
 import React from 'react';
-import { ToastAndroid, Text, StyleSheet, View, FlatList, ActivityIndicator, ScrollView } from 'react-native';
-import { Card, ListItem, Button} from 'react-native-elements';
+import { ToastAndroid, Text, StyleSheet, View, FlatList, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { Card, ListItem, Button } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 
 import { observer, inject } from 'mobx-react/native';
@@ -12,8 +13,7 @@ export default class StoreDetail extends React.Component {
         super(props);
 
         this.state = {
-            loading: false,
-            edit: false,         
+            loading: false,         
         }
     }
     
@@ -21,13 +21,19 @@ export default class StoreDetail extends React.Component {
         const { params = {} } = navigation.state;
         return {
             title: `${params.name} Detail`,
-            headerTintColor: 'white',
+            headerRight:(
+                <TouchableOpacity
+                onPress={() => params.handleEdit()}
+                style={styles.editBtn}>
+                    <Icon name="ios-copy-outline" size={30} color="#000" />
+                </TouchableOpacity>
+             ),
+            headerTintColor: '#000',
             headerStyle: {
-                backgroundColor: '#2c3e50', 
-                elevation: null
+                backgroundColor: '#fff', 
             },
             headerTitleStyle: {
-                color: '#fff'
+                color: '#000'
             } 
         }    
     }
@@ -43,9 +49,10 @@ export default class StoreDetail extends React.Component {
     componentDidMount() {
         this.setState({loading: true})
         const {state} = this.props.navigation;
+        this.props.navigation.setParams({ handleEdit: this._editMode });
         this.props.store.getOneSchedule(state.params.id, (msg) => {            
             this.setState({loading: msg});
-        });
+        });        
     };
 
     capitalizeFirstLetter = (string) => {
@@ -53,20 +60,21 @@ export default class StoreDetail extends React.Component {
     }
 
     _editMode = () => {
-        this.setState({edit: !this.state.edit})
+        const { state, navigate } = this.props.navigation;
+        navigate('AddSchedule', {id: state.params.id, name: state.params.name, topic: state.params.topic})
     }
 
     renderActivity = () => {
         return(
             <View style={styles.activity}>
-                <ActivityIndicator size="large" color="#9E9E9E" /> 
+                <ActivityIndicator size="large" color="#02309F" /> 
             </View>
         )
     }
 
     renderCardItem = () => {      
         return(        
-            <ScrollView>               
+            <ScrollView contentContainerStyle={styles.contentContainer}>               
                 <Card title="SCHEDULE LIST AC">
                     <FlatList 
                     data={this.props.store.schedules.filter(this.getAC)}
@@ -96,45 +104,36 @@ export default class StoreDetail extends React.Component {
                     )}
                     keyExtractor={data => data.id_schedule}    
                     />
-                </Card>
-                <Button
-                    large
-                    containerViewStyle={{marginTop: 15, marginBottom: 10}}
-                    onPress={this._editMode}
-                    backgroundColor='#607D8B'
-                    icon={{name: 'edit', type: 'font-awesome'}}
-                    title='EDIT' />        
+                </Card>      
             </ScrollView>
         )
     }
-    
-    renderButtonAdd = () => {
+
+    renderAddTxt = () => {
         const { state, navigate } = this.props.navigation;
         return(
             <View style={styles.activity}>
-                <Button
-                large
-                onPress={()=> navigate('AddSchedule', {id: state.params.id, name: state.params.name, topic: state.params.topic})}
-                backgroundColor='#607D8B'
-                icon={{name: 'add'}}
-                title='ADD SCHEDULE' /> 
+                <Text style={styles.addTxt}>Add Schedule</Text>
             </View>
         )
     }
 
     render() {
-        console.log(this.props.store.schedules.filter(this.getSNG)) 
         if(this.state.loading) {
             return this.renderActivity()
         } else {
             return(            
-            this.props.store.schedules.length === 0 ? this.renderButtonAdd() : this.renderCardItem()
+            this.props.store.schedules.length === 0 ? this.renderAddTxt() : this.renderCardItem()
             )
         }
     }
 }
 
 const styles = StyleSheet.create({
+    contentContainer: {
+        backgroundColor: '#fff',
+        paddingBottom: 10
+    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
@@ -143,7 +142,8 @@ const styles = StyleSheet.create({
     activity: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: '#fff'
     },
     form: {
         flexDirection: 'row',
@@ -164,5 +164,12 @@ const styles = StyleSheet.create({
         width: 70, 
         marginRight: 50,
         marginLeft: 10,  
+    }, 
+    editBtn: {
+        marginRight: 20
+    },
+    addTxt: {
+        fontSize: 20,
+        color: 'grey'
     }
 })
