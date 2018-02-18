@@ -25,8 +25,12 @@ export default class Lists extends React.Component {
   componentWillMount() {
       this.setState({loading: true})
       this.props.store.fetchAll((msg) => {
-        this.setState({loading: msg})
-      })
+        if(msg == 'Internal Server Error') {
+          alert(msg)
+        } else {
+          this.setState({loading: msg});
+        }
+      });
   }
 
   renderSeparator = () => {
@@ -67,8 +71,8 @@ export default class Lists extends React.Component {
 		}
 	}
 
-	deleteRow(rowKey) {
-    this.props.store.deleteOneStore(rowKey, (msg) => {
+	deleteRow(rowKey, topic) {
+    this.props.store.deleteOneStore(rowKey, topic, (msg) => {
         ToastAndroid.showWithGravityAndOffset(
           msg,
           ToastAndroid.LONG,
@@ -128,7 +132,7 @@ export default class Lists extends React.Component {
               ItemSeparatorComponent={this.renderSeparator}            
               renderHiddenItem={ (data, rowMap) => (
                 <View style={styles.rowBack}>
-                    <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(data.item.id_store) }>
+                    <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(data.item.id_store, data.item.topic) }>
                       <Icon                              
                         name='ios-trash'
                         type='ionicon'

@@ -31,7 +31,7 @@ export default class AddSchedule extends React.Component {
             sabtu_off: '',
             minggu_on: '',
             minggu_off: '',
-            komponen: '',
+            komponen: 0,
 
         }
         
@@ -52,10 +52,7 @@ export default class AddSchedule extends React.Component {
     }
 
     componentDidMount() {
-        const { state } = this.props.navigation;
-        console.log(state.params.id);
-        console.log(state.params.name);
-        console.log(state.params.topic);        
+        console.log("component didmount",this.state.komponen);    
     }
 
     backToSchedule = () => {
@@ -66,105 +63,148 @@ export default class AddSchedule extends React.Component {
     saveSchedule = () => {
         const { state } = this.props.navigation;
         let datas;
-        if(this.state.all) {
-            datas = {
-                senin: {
-                    day:'senin', time_on: this.state.all_on, time_off: this.state.all_off
-                },
-                selasa: {
-                    day:'selasa', time_on: this.state.all_on, time_off: this.state.all_off
-                },
-                rabu: {
-                    day:'rabu', time_on: this.state.all_on, time_off: this.state.all_off
-                },
-                kamis: {
-                    day:'kamis', time_on: this.state.all_on, time_off: this.state.all_off
-                },
-                jumat: {
-                    day:'jumat', time_on: this.state.all_on, time_off: this.state.all_off
-                }, 
-                sabtu: {
-                    day:'sabtu', time_on: this.state.all_on, time_off: this.state.all_off
-                },
-                minggu: {
-                    day:'minggu', time_on: this.state.all_on, time_off: this.state.all_off
-                },
-                id_store: state.params.id,
-                topic: state.params.topic,  
-                komponen: this.state.komponen
+        if(this.state.komponen === 0) {
+            alert('Please select device !')
+        } else {   
+            if(this.state.all) {
+                datas = {
+                    senin: {
+                        day:'senin', time_on: this.state.all_on, time_off: this.state.all_off
+                    },
+                    selasa: {
+                        day:'selasa', time_on: this.state.all_on, time_off: this.state.all_off
+                    },
+                    rabu: {
+                        day:'rabu', time_on: this.state.all_on, time_off: this.state.all_off
+                    },
+                    kamis: {
+                        day:'kamis', time_on: this.state.all_on, time_off: this.state.all_off
+                    },
+                    jumat: {
+                        day:'jumat', time_on: this.state.all_on, time_off: this.state.all_off
+                    }, 
+                    sabtu: {
+                        day:'sabtu', time_on: this.state.all_on, time_off: this.state.all_off
+                    },
+                    minggu: {
+                        day:'minggu', time_on: this.state.all_on, time_off: this.state.all_off
+                    },
+                    id_store: state.params.id,
+                    topic: state.params.topic,  
+                    komponen: this.state.komponen
+                }
+            } else {
+                datas = {
+                    senin: {
+                        day:'senin', time_on: this.state.senin_on, time_off: this.state.senin_off
+                    },
+                    selasa: {
+                        day:'selasa', time_on: this.state.selasa_on, time_off: this.state.selasa_off
+                    },
+                    rabu: {
+                        day:'rabu', time_on: this.state.rabu_on, time_off: this.state.rabu_off
+                    },
+                    kamis: {
+                        day:'kamis', time_on: this.state.kamis_on, time_off: this.state.kamis_off
+                    },
+                    jumat: {
+                        day:'jumat', time_on: this.state.jumat_on, time_off: this.state.jumat_off
+                    }, 
+                    sabtu: {
+                        day:'sabtu', time_on: this.state.sabtu_on, time_off: this.state.sabtu_off
+                    },
+                    minggu: {
+                        day:'minggu', time_on: this.state.minggu_on, time_off: this.state.minggu_off
+                    },
+                    id_store: state.params.id,
+                    topic: state.params.topic,
+                    komponen: this.state.komponen    
+                }
+            };        
+        
+            if(this.props.store.schedules.length > 7) {
+                this.props.store.updateSchedule((msg) => {
+                    if(msg == 'one or more field is empty') {
+                        ToastAndroid.showWithGravityAndOffset(
+                            msg,
+                            ToastAndroid.LONG,
+                            ToastAndroid.BOTTOM,
+                            10,
+                            200
+                        );
+                    } else {
+                        ToastAndroid.showWithGravityAndOffset(
+                            msg,
+                            ToastAndroid.LONG,
+                            ToastAndroid.BOTTOM,
+                            10,
+                            200
+                        );
+                    }            
+                }, state.params.id, {...datas})
+            } else {
+                this.props.store.saveSchedule((msg) => {
+                    if(msg == 'one or more field is empty') {
+                        ToastAndroid.showWithGravityAndOffset(
+                            msg,
+                            ToastAndroid.LONG,
+                            ToastAndroid.BOTTOM,
+                            10,
+                            200
+                        );
+                    } else {
+                        ToastAndroid.showWithGravityAndOffset(
+                            msg,
+                            ToastAndroid.LONG,
+                            ToastAndroid.BOTTOM,
+                            10,
+                            200
+                        );
+                    }            
+                }, {...datas})
             }
-        } else {
-            datas = {
-                senin: {
-                    day:'senin', time_on: this.state.senin_on, time_off: this.state.senin_off
-                },
-                selasa: {
-                    day:'selasa', time_on: this.state.selasa_on, time_off: this.state.selasa_off
-                },
-                rabu: {
-                    day:'rabu', time_on: this.state.rabu_on, time_off: this.state.rabu_off
-                },
-                kamis: {
-                    day:'kamis', time_on: this.state.kamis_on, time_off: this.state.kamis_off
-                },
-                jumat: {
-                    day:'jumat', time_on: this.state.jumat_on, time_off: this.state.jumat_off
-                }, 
-                sabtu: {
-                    day:'sabtu', time_on: this.state.sabtu_on, time_off: this.state.sabtu_off
-                },
-                minggu: {
-                    day:'minggu', time_on: this.state.minggu_on, time_off: this.state.minggu_off
-                },
-                id_store: state.params.id,
-                topic: state.params.topic,
-                komponen: this.state.komponen    
-            }
-        };        
-       
-        if(this.props.store.schedules.length > 7) {
-            this.props.store.updateSchedule((msg) => {
-                if(msg == 'one or more field is empty') {
-                    ToastAndroid.showWithGravityAndOffset(
-                        msg,
-                        ToastAndroid.LONG,
-                        ToastAndroid.BOTTOM,
-                        10,
-                        200
-                    );
-                } else {
-                    ToastAndroid.showWithGravityAndOffset(
-                        msg,
-                        ToastAndroid.LONG,
-                        ToastAndroid.BOTTOM,
-                        10,
-                        200
-                    );
-                }            
-            }, state.params.id, {...datas})
-        } else {
-            this.props.store.saveSchedule((msg) => {
-                if(msg == 'one or more field is empty') {
-                    ToastAndroid.showWithGravityAndOffset(
-                        msg,
-                        ToastAndroid.LONG,
-                        ToastAndroid.BOTTOM,
-                        10,
-                        200
-                    );
-                } else {
-                    ToastAndroid.showWithGravityAndOffset(
-                        msg,
-                        ToastAndroid.LONG,
-                        ToastAndroid.BOTTOM,
-                        10,
-                        200
-                    );
-                }            
-            }, {...datas})
         }
+    }
 
+    getAC = (comp) => {
+        return comp.id_komponen == 1;
+    }
 
+    getSNG = (comp) => {
+        return comp.id_komponen == 2;
+    }
+
+    _renderPickerItem = () => {
+            if(this.props.store.schedules.filter(this.getAC) == 0) {
+                return (               
+                    <Picker
+                        selectedValue={this.state.komponen}
+                        onValueChange={(itemValue, itemIndex) => this.setState({komponen: itemValue})}> 
+                        <Picker.Item label="Select Devices" value="0" />                          
+                        <Picker.Item label="Air Conditioner" value="1" />   
+                    </Picker>
+                )
+            } else if(this.props.store.schedules.filter(this.getSNG) == 0) {
+                return (
+                    <Picker
+                        selectedValue={this.state.komponen}
+                        onValueChange={(itemValue, itemIndex) => this.setState({komponen: itemValue})}>
+                        <Picker.Item label="Select Devices" value="0" />
+                        <Picker.Item label="Signage" value="2" />                
+                    </Picker>              
+                )
+            } else {
+                return(
+                    <Picker
+                        selectedValue={this.state.komponen}
+                        onValueChange={(itemValue, itemIndex) => this.setState({komponen: itemValue})}>
+                        <Picker.Item label="Select Devices" value="0" />
+                        <Picker.Item label="Air Conditioner" value="1" />
+                        <Picker.Item label="Signage" value="2" />   
+                    </Picker>
+                )
+            }
+       
     }
 
     _showDateTimePicker = (msgs) => {
@@ -213,7 +253,7 @@ export default class AddSchedule extends React.Component {
 
     render() {
         const { state } = this.props.navigation;
-        console.log("ini state params edit ", state.params.edit)
+        console.log("render", this.state.komponen);
         return( 
             <View style={styles.container}>
                 <ListItem
@@ -227,12 +267,15 @@ export default class AddSchedule extends React.Component {
                   
                 />
                 <View style={styles.picker}>   
-                    <Picker
-                        selectedValue={this.state.komponen}
-                        onValueChange={(itemValue, itemIndex) => this.setState({komponen: itemValue})}>
-                        <Picker.Item label="Air Conditioner" value="0" />
-                        <Picker.Item label="Signage" value="1" />
-                    </Picker>
+                   {this.props.store.schedules.length > 0 ? this._renderPickerItem() : 
+                        <Picker
+                            selectedValue={this.state.komponen}
+                            onValueChange={(itemValue, itemIndex) => this.setState({komponen: itemValue})}>
+                            <Picker.Item label="Select Devices" value="0" />
+                            <Picker.Item label="Air Conditioner" value="1" />
+                            <Picker.Item label="Signage" value="2" />   
+                        </Picker>
+                    }
                 </View>             
                 {this.state.all == true ? 
                     <View>

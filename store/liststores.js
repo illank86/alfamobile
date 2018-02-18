@@ -9,9 +9,13 @@ class ObservableListStore {
     fetchAll(clb) {        
         fetch('https://glacial-cliffs-13214.herokuapp.com/api/data/stores')
         .then(res => res.json())
-        .then((stores) => {                       
-            this.listStore = stores;
-            clb(false)
+        .then((stores) => {
+            if(stores.error) {
+                clb(stores.error)
+            } else {
+                this.listStore = stores;
+                clb(false)
+            }  
         })
     }
 
@@ -30,7 +34,7 @@ class ObservableListStore {
         .then((res) => res.json())
         .then((data) => {
             if(data.error) {
-                console.log(err);
+                clb(data.err);
             } else {
                 clb(data.message);                
                 this.fetchAll((msg) => {
@@ -97,8 +101,8 @@ class ObservableListStore {
         })       
     }
 
-    deleteOneStore(item, clb) {
-        fetch(`https://glacial-cliffs-13214.herokuapp.com/api/data/delete-store/${item}`, {
+    deleteOneStore(item, topic, clb) {
+        fetch(`https://glacial-cliffs-13214.herokuapp.com/api/data/delete-store/${item}/${topic}`, {
             method: 'delete'
         })
         .then(res => res.json())  

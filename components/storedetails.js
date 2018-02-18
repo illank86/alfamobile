@@ -39,11 +39,11 @@ export default class StoreDetail extends React.Component {
     }
 
     getAC = (comp) => {
-        return comp.id_komponen == 0;
+        return comp.id_komponen == 1;
     }
 
     getSNG = (comp) => {
-        return comp.id_komponen == 1;
+        return comp.id_komponen == 2;
     }
 
     componentDidMount() {
@@ -52,7 +52,7 @@ export default class StoreDetail extends React.Component {
         this.props.navigation.setParams({ handleEdit: this._editMode });
         this.props.store.getOneSchedule(state.params.id, (msg) => {            
             this.setState({loading: msg});
-        });        
+        });          
     };
 
     capitalizeFirstLetter = (string) => {
