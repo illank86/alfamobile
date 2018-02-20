@@ -5,13 +5,16 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import { observer, inject } from 'mobx-react/native';
 
+import StatusItem from './status';
+import ScheduleCards from './schedulecard';
+
 
 class StoreDetail extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            loading: false,         
+            loading: false,        
         }
     }
     
@@ -44,13 +47,38 @@ class StoreDetail extends React.Component {
         return comp.id_komponen == 2;
     }
 
+    _round = (value, precision) => {
+        var multiplier = Math.pow(10, precision || 0);
+        return Math.round(value * multiplier) / multiplier;
+    }
+
+    _callToast(msg) {
+        ToastAndroid.showWithGravityAndOffset(
+          msg,
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM,
+          10,
+          200)
+      }
+
     componentDidMount() {
-        this.setState({loading: true})
+        this.setState({loading: true});
         const {state} = this.props.navigation;
         this.props.navigation.setParams({ handleEdit: this._editMode });
-        this.props.store.getOneSchedule(state.params.id, (msg) => {            
-            this.setState({loading: msg});
-        });          
+        this.props.store.getOneSchedule(state.params.id, (msgs) => {
+            if(msgs.error) {
+                this._callToast(msgs.error);
+            } else {          
+                this.props.store.getOneReport(state.params.id, (msg) => {
+                    if(msg.error) {
+                        this._callToast(msg.error);
+                    } else {
+                        this.setState({loading: msg});
+                    }         
+                }); 
+            }
+        }); 
+       
     };
 
     capitalizeFirstLetter = (string) => {
@@ -70,15 +98,28 @@ class StoreDetail extends React.Component {
         )
     }
 
-    renderCardItem = () => {      
+    renderCardItem = () => {
+        const { store } = this.props;     
         return(
-            <View style={styles.container}>                   
-                <ScrollView> 
-                    {this.props.store.schedules.filter(this.getAC).length == 0 ? null :              
-                        <Card title="SCHEDULE LIST AC">
-                            <FlatList 
-                            data={this.props.store.schedules.filter(this.getAC)}
-                            renderItem={data => (
+            <View style={styles.container}>
+                {store.reports.length == 0 ? null :
+                    <StatusItem
+                        AM = {store.reports[0].status_auto_manual == 0 ? 'M' : 'A'}
+                        phase3 = {store.reports[0].status_3phase == 0 ? <Icon name="ios-snow" size={20} color="#BDBDBD" /> : <Icon name="ios-snow" size={20} color="#8BC34A" />}
+                        phase1 = {store.reports[0].status_1phase == 0 ? <Icon name="ios-bulb" size={20} color="#BDBDBD" /> : <Icon name="ios-bulb" size={20} color="#8BC34A" />}
+                        timestamps = {moment(store.reports[0].timestamp).format("YYYY-MM-DD HH:mm:ss")}
+                        currentR = {this._round(store.reports[0].current_r, 1)} 
+                        currentS = {this._round(store.reports[0].current_s, 1)} 
+                        currentT = {this._round(store.reports[0].current_t, 1)}
+                        currentSNG = {this._round(store.reports[0].current_sng, 1)} 
+                    />
+                }                  
+                <ScrollView contentContainerStyle={styles.contentContainer}> 
+                    {store.schedules.filter(this.getAC).length == 0 ? null :
+                        <ScheduleCards 
+                            titles ='SCHEDULE LIST AC'
+                            data = {store.schedules.filter(this.getAC)}
+                            renderitems = {data => (
                                 <ListItem 
                                     leftIcon={{name: 'access-alarms'}}
                                     containerStyle={{borderBottomWidth: 0, paddingLeft: 15, paddingTop: 10, paddingBottom: 5}}
@@ -87,15 +128,15 @@ class StoreDetail extends React.Component {
                                     subtitle={`Time ON = ${moment(data.item.time_on, "hhmm").format("HH:mm")} - Time OFF = ${moment(data.item.time_off, "hhmm").format("HH:mm")}`}
                                 />
                             )}
-                            keyExtractor={data => data.id_schedule}    
-                            />
-                        </Card>
+
+                            keyExtractor = {data => data.id_schedule}
+                        />
                     }
-                    {this.props.store.schedules.filter(this.getSNG).length == 0 ? null :
-                        <Card title="SCHEDULE LIST SIGNAGE">
-                            <FlatList 
-                            data={this.props.store.schedules.filter(this.getSNG)}
-                            renderItem={data => (
+                    {store.schedules.filter(this.getSNG).length == 0 ? null :
+                        <ScheduleCards 
+                            titles ='SCHEDULE LIST SIGNAGE'
+                            data = {store.schedules.filter(this.getSNG)}
+                            renderitems = {data => (
                                 <ListItem 
                                     leftIcon={{name: 'access-alarms'}}
                                     containerStyle={{borderBottomWidth: 0, paddingLeft: 15, paddingTop: 10, paddingBottom: 5}}
@@ -104,9 +145,9 @@ class StoreDetail extends React.Component {
                                     subtitle={`Time ON = ${moment(data.item.time_on, "hhmm").format("HH:mm")} - Time OFF = ${moment(data.item.time_off, "hhmm").format("HH:mm")}`}
                                 />
                             )}
-                            keyExtractor={data => data.id_schedule}    
-                            />
-                        </Card>
+
+                            keyExtractor = {data => data.id_schedule}
+                        />
                     }      
                 </ScrollView> 
             </View>          
@@ -136,8 +177,7 @@ class StoreDetail extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        paddingBottom: 10
+        backgroundColor: '#BDBDBD',
     },
     activity: {
         flex: 1,
@@ -145,18 +185,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: '#fff'
     },
-    form: {
-        flexDirection: 'row',
-        margin: 5,
-        padding: 7,
-        backgroundColor: '#fff'
-    },
-    input: {
-        paddingTop: 5,
-        paddingBottom: 5,
-        width: 80,
-        marginLeft: 5,
-        color: '#9e9e9e'
+    contentContainer: {
+        paddingBottom: 20,
     },
     title: { 
         paddingTop: 5,

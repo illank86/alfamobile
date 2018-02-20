@@ -106,16 +106,24 @@ class Lists extends React.Component {
 		if (rowMap[rowKey]) {
 			rowMap[rowKey].closeRow();
 		}
-	}
+  }
+  
+  _callToast(msg) {
+    ToastAndroid.showWithGravityAndOffset(
+      msg,
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+      10,
+      200)
+  }
 
 	deleteRow(rowKey, topic) {
     this.props.store.deleteOneStore(rowKey, topic, (msg) => {
-        ToastAndroid.showWithGravityAndOffset(
-          msg,
-          ToastAndroid.LONG,
-          ToastAndroid.BOTTOM,
-          10,
-          200)
+      if(msg.error) {
+        this._callToast(msg.error);
+      } else {
+        this._callToast(msg);
+      }
       })
   }
   

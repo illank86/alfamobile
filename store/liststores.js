@@ -59,24 +59,32 @@ class ObservableListStore {
     getOneSchedule(id, clb) {
         fetch(`${develop}/api/data/get-schedule/${id}`, {timeout: timeout})
         .then(res => res.json())
-        .then((schedule) => {  
-            this.schedules = schedule;
-            clb(false)
+        .then((schedule) => {
+            if(schedule.error) {
+                clb(schedule);
+            } else {
+                this.schedules = schedule;
+                clb(false);
+            }             
         })
         .catch(error => {
-            clb(error)
+            clb(error);
         });
     }
 
     getOneReport(id, clb) {
         fetch(`${develop}/api/data/get-report/${id}`, {timeout: timeout})
         .then(res => res.json())
-        .then((report) => {  
-            this.reports = report;
-            clb(false)
+        .then((report) => { 
+            if(report.error) {
+                clb(report);
+            } else {
+                this.reports = report;
+                clb(false);
+            }
         })
         .catch(error => {
-            clb(error)
+            clb(error);
         });
     }
 
@@ -103,7 +111,7 @@ class ObservableListStore {
            }
         })
         .catch(error => {
-            clb(error)
+            clb(error);
         });       
     }
 
@@ -130,7 +138,7 @@ class ObservableListStore {
            }
         })
         .catch(error => {
-            clb(error)
+            clb(error);
         });       
     }
 
@@ -150,7 +158,7 @@ class ObservableListStore {
             }                          
         })
         .catch(error => {
-            clb(error)
+            clb(error);
         });
     }
 }

@@ -49,10 +49,6 @@ class AddSchedule extends React.Component {
         }    
     }
 
-    componentDidMount() {
-        console.log("component didmount",this.state.komponen);    
-    }
-
     backToSchedule = () => {
         const { goBack } = this.props.navigation;
         goBack();
@@ -251,7 +247,6 @@ class AddSchedule extends React.Component {
 
     render() {
         const { state } = this.props.navigation;
-        console.log("render", this.state.komponen);
         return( 
             <View style={styles.container}>
                 <ListItem
