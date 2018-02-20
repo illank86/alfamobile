@@ -3,12 +3,10 @@ import { ToastAndroid, Text, StyleSheet, View, FlatList, ActivityIndicator, Scro
 import { Card, ListItem, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
-
 import { observer, inject } from 'mobx-react/native';
 
-@inject('store')
-@observer
-export default class StoreDetail extends React.Component {
+
+class StoreDetail extends React.Component {
     constructor(props) {
         super(props);
 
@@ -25,16 +23,16 @@ export default class StoreDetail extends React.Component {
                 <TouchableOpacity
                 onPress={() => params.handleEdit()}
                 style={styles.editBtn}>
-                    <Icon name="ios-copy-outline" size={30} color="#000" />
+                    <Icon name="ios-copy-outline" size={30} color="#fff" />
                 </TouchableOpacity>
              ),
-            headerTintColor: '#000',
-            headerStyle: {
-                backgroundColor: '#fff', 
-            },
-            headerTitleStyle: {
-                color: '#000'
-            } 
+             headerTintColor: '#fff',
+             headerTitleStyle: { 
+                 color:"#fff", 
+             },
+             headerStyle: {
+                 backgroundColor: '#EF5350',
+             } 
         }    
     }
 
@@ -67,45 +65,51 @@ export default class StoreDetail extends React.Component {
     renderActivity = () => {
         return(
             <View style={styles.activity}>
-                <ActivityIndicator size="large" color="#02309F" /> 
+                <ActivityIndicator size="large" color="#EF5350" /> 
             </View>
         )
     }
 
     renderCardItem = () => {      
-        return(        
-            <ScrollView contentContainerStyle={styles.contentContainer}>               
-                <Card title="SCHEDULE LIST AC">
-                    <FlatList 
-                    data={this.props.store.schedules.filter(this.getAC)}
-                    renderItem={data => (
-                        <ListItem 
-                            leftIcon={{name: 'access-alarms'}}
-                            containerStyle={{borderBottomWidth: 0, paddingLeft: 15, paddingTop: 10, paddingBottom: 5}}
-                            hideChevron                     
-                            title={this.capitalizeFirstLetter(data.item.day)}
-                            subtitle={`Time ON = ${moment(data.item.time_on, "hhmm").format("HH:mm")} - Time OFF = ${moment(data.item.time_off, "hhmm").format("HH:mm")}`}
-                        />
-                    )}
-                    keyExtractor={data => data.id_schedule}    
-                    />
-                </Card>
-                <Card title="SCHEDULE LIST SIGNAGE">
-                    <FlatList 
-                    data={this.props.store.schedules.filter(this.getSNG)}
-                    renderItem={data => (
-                        <ListItem 
-                            leftIcon={{name: 'access-alarms'}}
-                            containerStyle={{borderBottomWidth: 0, paddingLeft: 15, paddingTop: 10, paddingBottom: 5}}
-                            hideChevron                     
-                            title={this.capitalizeFirstLetter(data.item.day)}
-                            subtitle={`Time ON = ${moment(data.item.time_on, "hhmm").format("HH:mm")} - Time OFF = ${moment(data.item.time_off, "hhmm").format("HH:mm")}`}
-                        />
-                    )}
-                    keyExtractor={data => data.id_schedule}    
-                    />
-                </Card>      
-            </ScrollView>
+        return(
+            <View style={styles.container}>                   
+                <ScrollView> 
+                    {this.props.store.schedules.filter(this.getAC).length == 0 ? null :              
+                        <Card title="SCHEDULE LIST AC">
+                            <FlatList 
+                            data={this.props.store.schedules.filter(this.getAC)}
+                            renderItem={data => (
+                                <ListItem 
+                                    leftIcon={{name: 'access-alarms'}}
+                                    containerStyle={{borderBottomWidth: 0, paddingLeft: 15, paddingTop: 10, paddingBottom: 5}}
+                                    hideChevron                     
+                                    title={this.capitalizeFirstLetter(data.item.day)}
+                                    subtitle={`Time ON = ${moment(data.item.time_on, "hhmm").format("HH:mm")} - Time OFF = ${moment(data.item.time_off, "hhmm").format("HH:mm")}`}
+                                />
+                            )}
+                            keyExtractor={data => data.id_schedule}    
+                            />
+                        </Card>
+                    }
+                    {this.props.store.schedules.filter(this.getSNG).length == 0 ? null :
+                        <Card title="SCHEDULE LIST SIGNAGE">
+                            <FlatList 
+                            data={this.props.store.schedules.filter(this.getSNG)}
+                            renderItem={data => (
+                                <ListItem 
+                                    leftIcon={{name: 'access-alarms'}}
+                                    containerStyle={{borderBottomWidth: 0, paddingLeft: 15, paddingTop: 10, paddingBottom: 5}}
+                                    hideChevron                     
+                                    title={this.capitalizeFirstLetter(data.item.day)}
+                                    subtitle={`Time ON = ${moment(data.item.time_on, "hhmm").format("HH:mm")} - Time OFF = ${moment(data.item.time_off, "hhmm").format("HH:mm")}`}
+                                />
+                            )}
+                            keyExtractor={data => data.id_schedule}    
+                            />
+                        </Card>
+                    }      
+                </ScrollView> 
+            </View>          
         )
     }
 
@@ -130,14 +134,10 @@ export default class StoreDetail extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    contentContainer: {
-        backgroundColor: '#fff',
-        paddingBottom: 10
-    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        height: '100%'
+        paddingBottom: 10
     },
     activity: {
         flex: 1,
@@ -172,4 +172,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: 'grey'
     }
-})
+});
+
+StoreDetail = inject('store')(observer(StoreDetail));
+export default StoreDetail;

@@ -1,36 +1,69 @@
 import React from 'react';
 import { ToastAndroid, View, StatusBar, StyleSheet, TouchableOpacity, TouchableHighlight, FlatList, ActivityIndicator, Text, SwipeableListView } from 'react-native';
-import { Header, ListItem, Icon, SearchBar, List, Avatar } from 'react-native-elements';
+import { Header, ListItem, SearchBar, List, Avatar } from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 import { observer, inject } from 'mobx-react/native';
 
 
-@inject('store')
-@observer
-export default class Lists extends React.Component {
+class Lists extends React.Component {
   constructor(props) {
     super(props);
 
     this. state = {
       loading: false,
-      refresh: false, 
+      refresh: false,
+      words: 'Please add a store' 
     }
   }
 
-  static navigationOptions = { 
-    title: 'Store List', 
+  static navigationOptions = ({ navigation }) => { 
+    const { params = {} } = navigation.state;
+      return{
+      title: 'Alfamart Stores',
+      headerRight:(
+        <TouchableOpacity
+        onPress={() => params.searchStore()}
+        style={styles.seacrhBtn}>
+            <Icon name="ios-search" size={25} color="#fff" />
+        </TouchableOpacity>
+    ),
+      headerTitleStyle: { 
+        color:"#fff", 
+      },
+      headerStyle: {
+        backgroundColor: '#EF5350',
+      } 
+    }
+  }
+
+  componentDidMount() {
+    this.props.navigation.setParams({ searchStore: this._searchMode });
+  }
+
+  _searchMode = () => {
+    alert('Searching...');
+  }
+
+  fetchData = () => {
+    this.props.store.fetchAll((msg) => {
+      if(msg.error) {
+        alert(msg.error)
+      } else {
+        if(msg == 'TypeError: Network request failed') {
+          alert(msg)
+          this.setState({loading: false, words: 'Network request failed'});
+        } else {
+          this.setState({loading: false, words: 'Please add a store'});
+          this.setState({loading: false});
+        }
+      }
+    });
   }
 
   componentWillMount() {
       this.setState({loading: true})
-      this.props.store.fetchAll((msg) => {
-        if(msg == 'Internal Server Error') {
-          alert(msg)
-        } else {
-          this.setState({loading: msg});
-        }
-      });
+      this.fetchData();
   }
 
   renderSeparator = () => {
@@ -49,8 +82,12 @@ export default class Lists extends React.Component {
   renderActivity = () => {
     return(
         <View style={styles.activity}>
-            <ActivityIndicator size="large" color="#02309F" /> 
-            <Text style={{fontSize: 20, color: '#02309F'}}>Loading...</Text>
+            <StatusBar
+                backgroundColor="#EF5350"
+                barStyle="light-content"
+              />
+            <ActivityIndicator size="large" color="#EF5350" /> 
+            <Text style={{fontSize: 20, color: 'grey'}}>Loading...</Text>
         </View>
     )
   }
@@ -100,12 +137,12 @@ export default class Lists extends React.Component {
         <View style={styles.container}>
           <View style={styles.content}>
           <StatusBar
-            backgroundColor="white"
-            barStyle="dark-content"
+            backgroundColor="#EF5350"
+            barStyle="light-content"
           />
           {this.props.store.listStore.length == 0 ?          
-            <TouchableOpacity style={styles.activity} onPress={()=>this.props.store.fetchAll(msg=>null)}>
-              <Text style={styles.welcome}>Please add a store</Text>
+            <TouchableOpacity style={styles.activity} onPress={()=>{this.fetchData(); this.setState({loading: true})}}>
+              <Text style={styles.welcome}>{this.state.words}</Text>
             </TouchableOpacity>          
             :
             <SwipeListView
@@ -134,9 +171,9 @@ export default class Lists extends React.Component {
                 <View style={styles.rowBack}>
                     <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(data.item.id_store, data.item.topic) }>
                       <Icon                              
-                        name='ios-trash'
-                        type='ionicon'
+                        name='ios-trash'                        
                         color='white'
+                        size={30}
                       />
                     </TouchableOpacity>
                 </View>
@@ -149,7 +186,7 @@ export default class Lists extends React.Component {
          }  
           </View>
           <TouchableOpacity style={styles.FloatBtn} onPress={() => navigate('AddStore')}>
-            <Icon name='add' color='white'/>
+            <Icon name='ios-add' size={40} color='#fff'/>
           </TouchableOpacity>
         </View>
       );
@@ -235,6 +272,12 @@ const styles = StyleSheet.create({
   welcome: {
     fontSize: 20,
     color: '#BDBDBD',
+  },
+  seacrhBtn: {
+    marginRight: 20
   }
 
-})
+});
+
+Lists = inject('store')(observer(Lists));
+export default Lists;

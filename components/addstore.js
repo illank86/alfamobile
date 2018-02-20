@@ -1,16 +1,13 @@
 import React from 'react';
 import { ToastAndroid, Text, StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage, Button } from 'react-native-elements';
-
 import { observer, inject } from 'mobx-react/native';
 
 import store from '../store/liststores';
 
 
 
-@inject('store')
-@observer
-export default class AddStore extends React.Component {
+class AddStore extends React.Component {
     constructor(props) {
         super(props);
         
@@ -20,19 +17,20 @@ export default class AddStore extends React.Component {
             topic: "",
             errorName: false,
             errorAddress: false,
-            errorTopic: false
+            errorTopic: false,
+            saveStatus: 'Save'
         }
     }
    
     static navigationOptions = { 
         title: 'Add Store',
-        headerTintColor: '#000',
-        headerStyle: {
-            backgroundColor: '#fff', 
+        headerTintColor: '#fff',
+        headerTitleStyle: { 
+            color:"#fff", 
         },
-        headerTitleStyle: {
-            color: '#000'
-        }     
+        headerStyle: {
+            backgroundColor: '#EF5350',
+        } 
     }
 
     backToLists = () => {
@@ -62,20 +60,34 @@ export default class AddStore extends React.Component {
                 this.topic.shake()  
             }
         } else {
-            this.props.store.addStore(...data, (msg) => {            
-                ToastAndroid.showWithGravityAndOffset(
-                    msg,
-                    ToastAndroid.LONG,
-                    ToastAndroid.BOTTOM,
-                    10,
-                    200
-                ); 
+            this.setState({saveStatus: 'Loading'})
+            this.props.store.addStore(...data, (msg) => {
+                if(msg.error) {
+                    ToastAndroid.showWithGravityAndOffset(
+                        msg.error,
+                        ToastAndroid.LONG,
+                        ToastAndroid.BOTTOM,
+                        10,
+                        200
+                    ); 
+                    this.setState({saveStatus: 'Save'});
+                }
                 
-                this.name.clearText();
-                this.address.clearText();
-                this.topic.clearText();
-                this.backToLists();
-                
+                if(msg.message) {
+                    ToastAndroid.showWithGravityAndOffset(
+                        msg.message,
+                        ToastAndroid.LONG,
+                        ToastAndroid.BOTTOM,
+                        10,
+                        200
+                    ); 
+
+                    this.setState({saveStatus: 'Save'});
+                    this.name.clearText();
+                    this.address.clearText();
+                    this.topic.clearText();
+                    this.backToLists();
+                }
             });   
         }
  
@@ -123,10 +135,10 @@ export default class AddStore extends React.Component {
                     
                 <View style={styles.btnView}>
                     <TouchableOpacity 
-                    style={styles.addBtn}
-                    onPress={this.addStore}
-                    >
-                        <Text style={styles.addTxt}>Add Store</Text>
+                        style={styles.addBtn}
+                        onPress={this.addStore}
+                        >
+                        <Text style={styles.addTxt}>{this.state.saveStatus}</Text>
                     </TouchableOpacity>
                 </View>
             </View>    
@@ -156,4 +168,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#fff'
     }
-})
+});
+
+AddStore = inject('store')(observer(AddStore));
+export default AddStore;

@@ -1,28 +1,37 @@
-import { observable } from 'mobx';
+import { extendObservable } from 'mobx';
+import fetch from 'react-native-fetch-polyfill';
 
+const live = 'https://glacial-cliffs-13214.herokuapp.com';
+const develop = 'http://192.168.100.4:8000';
+const timeout = 5 * 1000;
 
 class ObservableListStore {
-    @observable listStore = [];
-    @observable schedules = [];
-
-    //https://glacial-cliffs-13214.herokuapp.com
+    constructor() {
+        extendObservable (this, {listStore : []});
+        extendObservable (this, {schedules : []});
+        extendObservable (this, {reports : []});
+    }
+    
     fetchAll(clb) {        
-        fetch('https://glacial-cliffs-13214.herokuapp.com/api/data/stores')
+        fetch(`${develop}/api/data/stores`, {timeout: timeout})
         .then(res => res.json())
         .then((stores) => {
             if(stores.error) {
-                clb(stores.error)
+                clb(stores)
             } else {
                 this.listStore = stores;
                 clb(false)
             }  
         })
+        .catch(error => {            
+            clb(error)
+        });
     }
 
     addStore(name, address, topic, clb) {
         let data = {name, address, topic};    
 
-        fetch('https://glacial-cliffs-13214.herokuapp.com/api/data/add-store', { 
+        fetch(`${develop}/api/data/add-store`, { 
             method: "POST",                     
             headers: {
                 'Accept': 'application/json',
@@ -30,40 +39,58 @@ class ObservableListStore {
             },    
                     
             body: JSON.stringify(data)
-        }) 
+        }, {timeout: timeout}) 
         .then((res) => res.json())
         .then((data) => {
             if(data.error) {
-                clb(data.err);
+                clb(data);
             } else {
-                clb(data.message);                
+                clb(data);                
                 this.fetchAll((msg) => {
                     return null
                 });                  
             };
-         })      
+         })
+        .catch(error => {            
+            clb('TypeError: Network request failed');
+        });
     }
 
     getOneSchedule(id, clb) {
-        fetch(`https://glacial-cliffs-13214.herokuapp.com/api/data/get-schedule/${id}`)
+        fetch(`${develop}/api/data/get-schedule/${id}`, {timeout: timeout})
         .then(res => res.json())
         .then((schedule) => {  
             this.schedules = schedule;
             clb(false)
         })
+        .catch(error => {
+            clb(error)
+        });
+    }
+
+    getOneReport(id, clb) {
+        fetch(`${develop}/api/data/get-report/${id}`, {timeout: timeout})
+        .then(res => res.json())
+        .then((report) => {  
+            this.reports = report;
+            clb(false)
+        })
+        .catch(error => {
+            clb(error)
+        });
     }
 
     saveSchedule(clb, {...myData}) {
         let datas = myData;
         
-        fetch('https://glacial-cliffs-13214.herokuapp.com/api/data/add-schedule', {
+        fetch(`${develop}/api/data/add-schedule`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(datas)
-        })
+        }, {timeout: timeout})
         .then(res => res.json())
         .then(data => { 
            if(data.error) {
@@ -74,20 +101,23 @@ class ObservableListStore {
                   return null
               })             
            }
-        })       
+        })
+        .catch(error => {
+            clb(error)
+        });       
     }
 
     updateSchedule(clb, item, {...myData}) {
         let datas = myData;
         
-        fetch(`https://glacial-cliffs-13214.herokuapp.com/api/data/update-schedule/${item}`, {
+        fetch(`${develop}/api/data/update-schedule/${item}`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(datas)
-        })
+        }, {timeout: timeout})
         .then(res => res.json())
         .then(data => { 
            if(data.error) {
@@ -98,13 +128,16 @@ class ObservableListStore {
                   return null
               })             
            }
-        })       
+        })
+        .catch(error => {
+            clb(error)
+        });       
     }
 
     deleteOneStore(item, topic, clb) {
-        fetch(`https://glacial-cliffs-13214.herokuapp.com/api/data/delete-store/${item}/${topic}`, {
+        fetch(`${develop}/api/data/delete-store/${item}/${topic}`, {
             method: 'delete'
-        })
+        }, {timeout: timeout})
         .then(res => res.json())  
         .then((data) => {
             if(data.error) {
@@ -115,10 +148,13 @@ class ObservableListStore {
                     return null
                 });  
             }                          
+        })
+        .catch(error => {
+            clb(error)
         });
     }
 }
 
-const store = new ObservableListStore;
+const store = new ObservableListStore();
 
 export default store;

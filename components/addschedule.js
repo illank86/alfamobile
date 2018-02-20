@@ -4,11 +4,9 @@ import { Button, ListItem } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import { inject, observer } from 'mobx-react/native';
+import AddStore from './addstore';
 
-
-@inject('store')
-@observer
-export default class AddSchedule extends React.Component {
+class AddSchedule extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -41,13 +39,13 @@ export default class AddSchedule extends React.Component {
         const { state } = navigation;
         return {
             title: `Add ${state.params.name} Schedule`,
-            headerTintColor: '#000',
-            headerStyle: {
-                backgroundColor: '#fff', 
-            },
-            headerTitleStyle: {
-                color: '#000'
-            } 
+            headerTintColor: '#fff',
+            headerTitleStyle: { 
+                color:"#fff", 
+              },
+              headerStyle: {
+                backgroundColor: '#EF5350',
+              } 
         }    
     }
 
@@ -392,4 +390,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#fff'
     }
-})
+});
+
+AddSchedule = inject('store')(observer(AddSchedule));
+export default AddSchedule;

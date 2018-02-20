@@ -4,9 +4,6 @@ import Lists from '../storelist';
 import AddStore from '../addstore';
 import StoreDetail from '../storedetails';
 import AddSchedule from '../addschedule';
-import UpdateSchedule from '../updateschedule';
-
-//comment
 
 const Stack = StackNavigator({
     Home: {
@@ -20,9 +17,6 @@ const Stack = StackNavigator({
     },
     AddSchedule: {
         screen: AddSchedule
-    },
-    updateSchedule: {
-        screen: UpdateSchedule
     }
 });
 
