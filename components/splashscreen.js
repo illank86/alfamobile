@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToastAndroid, Text, View, TextInput, TouchableOpacity, StatusBar, AsyncStorage, ActivityIndicator } from 'react-native';
+import { ToastAndroid, Text, View, TextInput, Image, TouchableOpacity, StatusBar, AsyncStorage, ActivityIndicator } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 
 export default class SplashScreen extends React.Component{
@@ -101,9 +101,7 @@ export default class SplashScreen extends React.Component{
                     backgroundColor= '#EA6055'
                     barStyle="light-content"/> 
                     <View style={styles.logo}>
-                        <Text style={styles.Titles}>
-                            Alfamart IoT
-                        </Text>
+                        <Image style={styles.Titles} source={require('../assets/logo.png')}/>
                     </View>
                     {this.state.loading ? this._renderActivity() : this._renderButton()}
             </View>
@@ -117,9 +115,9 @@ const styles = {
         backgroundColor: '#EA6055',  
     },
     Titles: {
-        fontSize: 50,
-        color: '#fff',
-        fontWeight: 'bold'
+        width: 280,
+        height: 150,
+        resizeMode: 'contain',
     },
     logo: {
         flex: 1,

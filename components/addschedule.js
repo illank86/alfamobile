@@ -30,7 +30,7 @@ class AddSchedule extends React.Component {
             minggu_on: '',
             minggu_off: '',
             komponen: 0,
-
+            disableBtn: false
         }
         
  
@@ -55,6 +55,7 @@ class AddSchedule extends React.Component {
     }
 
     saveSchedule = () => {
+        this.setState({disableBtn: true});        
         const { state } = this.props.navigation;
         let datas;
         if(this.state.komponen === 0) {
@@ -115,7 +116,7 @@ class AddSchedule extends React.Component {
                     komponen: this.state.komponen    
                 }
             };        
-        
+            
             if(this.props.store.schedules.length > 7) {
                 this.props.store.updateSchedule((msg) => {
                     if(msg == 'one or more field is empty') {
@@ -126,6 +127,7 @@ class AddSchedule extends React.Component {
                             10,
                             200
                         );
+                        this.setState({disableBtn: false});
                     } else {
                         ToastAndroid.showWithGravityAndOffset(
                             msg,
@@ -134,6 +136,7 @@ class AddSchedule extends React.Component {
                             10,
                             200
                         );
+                        this.setState({disableBtn: false});
                     }            
                 }, state.params.id, state.params.token, {...datas})
             } else {
@@ -146,6 +149,7 @@ class AddSchedule extends React.Component {
                             10,
                             200
                         );
+                        this.setState({disableBtn: false});
                     } else {
                         ToastAndroid.showWithGravityAndOffset(
                             msg,
@@ -154,6 +158,7 @@ class AddSchedule extends React.Component {
                             10,
                             200
                         );
+                        this.setState({disableBtn: false});
                     }            
                 }, state.params.token, {...datas})
             }
@@ -321,6 +326,7 @@ class AddSchedule extends React.Component {
                         <TouchableOpacity 
                             style={styles.saveBtn}
                             onPress={this.saveSchedule}
+                            disabled={this.state.disableBtn}
                             >
                             {this.props.store.schedules.length > 7 ?<Text style={styles.saveTxt}>Update</Text> : <Text style={styles.saveTxt}>Save</Text>}
                         </TouchableOpacity>

@@ -13,7 +13,8 @@ class LoginScreen extends React.Component{
             username: '',
             password: '',
             signinWord: 'SIGN IN',
-            showPass: true
+            showPass: true,
+            disableBtn: false
         }
     }
 
@@ -25,15 +26,15 @@ class LoginScreen extends React.Component{
         }
     }
 
-    onLogin = () => {
-        this.setState({signinWord: 'LOADING'});
+    onLogin = () => {        
+        this.setState({signinWord: 'LOADING', disableBtn: true});        
         this.props.store.loginUser(this.state.username, this.state.password, (msg) => {
             if(msg.error) {
                 alert(msg.error);
-                this.setState({signinWord: 'SIGN IN'});
+                this.setState({signinWord: 'SIGN IN', disableBtn: false});
             } else {  
                 if(msg == 'TypeError: Network request failed') {
-                    this.setState({signinWord: 'SIGN IN'});
+                    this.setState({signinWord: 'SIGN IN', disableBtn: false});
                     alert(msg)
                 } else {         
                     let author = [['username', msg.username], ['token', msg.token]];  
@@ -41,7 +42,7 @@ class LoginScreen extends React.Component{
                     AsyncStorage.multiSet(author, (error) => {
                         if(error) {
                             alert("Error: Unable to set Authorization");
-                            this.setState({signinWord: 'SIGN IN'});
+                            this.setState({signinWord: 'SIGN IN', disableBtn: false});
                         } else {                            
                             ToastAndroid.showWithGravityAndOffset(
                                 msg.message,
@@ -74,9 +75,9 @@ class LoginScreen extends React.Component{
                 <StatusBar
                     barStyle="light-content"/>
                 <View style={styles.logoView}>
-                    <Text style={styles.Titles}>
-                        Alfamart IoT
-                    </Text>
+                    <View style={styles.logo}>
+                        <Image style={styles.Titles} source={require('../assets/logo.png')}/>
+                    </View>
                 </View>
       
                 <View style={styles.forms}> 
@@ -116,7 +117,7 @@ class LoginScreen extends React.Component{
                        
             
                     </View>
-                    <TouchableOpacity onPress={this.onLogin} style={styles.loginBtn}>
+                    <TouchableOpacity onPress={this.onLogin} style={styles.loginBtn} disabled={this.state.disableBtn}>
                         <Text style={styles.loginTxt}>{this.state.signinWord}</Text>
                     </TouchableOpacity>   
                 </View>     
@@ -143,9 +144,9 @@ const styles = {
 
     },
     Titles: {
-        fontSize: 30,
-        color: '#fff',
-        fontWeight: 'bold'
+        width: 200,
+        height: 120,
+        resizeMode: 'contain',
     },
     inputView: {        
         flexDirection: 'row',

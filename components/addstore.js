@@ -18,7 +18,8 @@ class AddStore extends React.Component {
             errorName: false,
             errorAddress: false,
             errorTopic: false,
-            saveStatus: 'Save'
+            saveStatus: 'Save',
+            disableBtn: false
         }
     }
    
@@ -39,14 +40,14 @@ class AddStore extends React.Component {
     }
 
     addStore = () => {  
+        this.setState({disableBtn: true});
         const { state } = this.props.navigation;
-
         let data = [
             this.state.name,
             this.state.address,
             this.state.topic    
-        ]
-
+        ];
+        
         if(this.state.name == '' || this.state.address == '' || this.state.topic == '') {
 
             if(this.state.name == "")  {       
@@ -62,7 +63,7 @@ class AddStore extends React.Component {
                 this.topic.shake()  
             }
         } else {
-            this.setState({saveStatus: 'Loading'})
+            this.setState({saveStatus: 'Loading'});
             this.props.store.addStore(...data, state.params.token, (msg) => {
                 if(msg.error) {
                     ToastAndroid.showWithGravityAndOffset(
@@ -72,7 +73,7 @@ class AddStore extends React.Component {
                         10,
                         200
                     ); 
-                    this.setState({saveStatus: 'Save'});
+                    this.setState({saveStatus: 'Save', disableBtn: false});                
                 }
                 
                 if(msg.message) {
@@ -84,7 +85,7 @@ class AddStore extends React.Component {
                         200
                     ); 
 
-                    this.setState({saveStatus: 'Save'});
+                    this.setState({saveStatus: 'Save', disableBtn: false});
                     this.name.clearText();
                     this.address.clearText();
                     this.topic.clearText();
@@ -139,6 +140,7 @@ class AddStore extends React.Component {
                     <TouchableOpacity 
                         style={styles.addBtn}
                         onPress={this.addStore}
+                        disabled={this.state.disableBtn}
                         >
                         <Text style={styles.addTxt}>{this.state.saveStatus}</Text>
                     </TouchableOpacity>

@@ -14,7 +14,8 @@ class RegisterScreen extends React.Component{
             password: '',
             passwordMatch: '',
             signupWord: 'SIGN UP',
-            showPass: true
+            showPass: true,
+            disabledBtn: false
         }
     }
 
@@ -30,7 +31,7 @@ class RegisterScreen extends React.Component{
     }
 
     onRegister = () => {
-        this.setState({signupWord: 'LOADING'})
+        this.setState({signupWord: 'LOADING', disabledBtn: true})
         let data = {
             username: this.state.username,
             name: this.state.name,
@@ -41,14 +42,15 @@ class RegisterScreen extends React.Component{
         this.props.store.registerUser((msg) => {
             if(msg.error) {
                 alert(msg.error);
-                this.setState({signupWord: 'SIGN UP'})
+                this.setState({signupWord: 'SIGN UP', disabledBtn: false})
             } else {
                 if(msg == 'TypeError: Network request failed') {
-                    this.setState({signupWord: 'SIGN UP'});
+                    this.setState({signupWord: 'SIGN UP', disabledBtn: false})
                     alert(msg)
                 } else {  
                     alert(msg.message);
-                    this.setState({signupWord: 'SIGN UP'})
+                    this.setState({signupWord: 'SIGN UP', disabledBtn: false})
+                    this.setState({username: '', name: '', email: '', password: '', passwordMatch: ''})
                     
                 }
             }
@@ -75,7 +77,7 @@ class RegisterScreen extends React.Component{
                         </View>
                         <View style={styles.txtInput}>    
                             <TextInput
-                                style = {styles.textInputs} 
+                                style = {styles.textInputs}                            
                                 onChangeText = {username => this.setState({username})}
                                 value = {this.state.username}
                                 underlineColorAndroid = 'transparent'
@@ -89,7 +91,7 @@ class RegisterScreen extends React.Component{
                         </View>
                         <View style={styles.txtInput}>
                             <TextInput
-                                style ={styles.textInputs} 
+                                style ={styles.textInputs}                              
                                 onChangeText = {name => this.setState({name})}
                                 value = {this.state.name}
                                 underlineColorAndroid = 'transparent'
@@ -117,7 +119,7 @@ class RegisterScreen extends React.Component{
                         </View>
                         <View style={styles.txtInput}>
                             <TextInput
-                                style ={styles.textInputs} 
+                                style ={styles.textInputs}
                                 onChangeText = {password => this.setState({password})}
                                 value = {this.state.password}
                                 underlineColorAndroid = 'transparent'
@@ -146,7 +148,7 @@ class RegisterScreen extends React.Component{
                             />
                         </View>
                     </View>
-                    <TouchableOpacity onPress={this.onRegister} style={styles.loginBtn}>
+                    <TouchableOpacity onPress={this.onRegister} style={styles.loginBtn} disabled={this.state.disabledBtn}>
                         <Text style={styles.loginTxt}>{this.state.signupWord}</Text>
                     </TouchableOpacity>   
                 </View> 
