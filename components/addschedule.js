@@ -44,7 +44,7 @@ class AddSchedule extends React.Component {
                 color:"#fff", 
               },
               headerStyle: {
-                backgroundColor: '#EF5350',
+                backgroundColor: '#EA6055',
               } 
         }    
     }
@@ -135,7 +135,7 @@ class AddSchedule extends React.Component {
                             200
                         );
                     }            
-                }, state.params.id, {...datas})
+                }, state.params.id, state.params.token, {...datas})
             } else {
                 this.props.store.saveSchedule((msg) => {
                     if(msg == 'one or more field is empty') {
@@ -155,7 +155,7 @@ class AddSchedule extends React.Component {
                             200
                         );
                     }            
-                }, {...datas})
+                }, state.params.token, {...datas})
             }
         }
     }
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: 300,
         height: 50,
-        backgroundColor: '#EF5350',
+        backgroundColor: '#EA6055',
         borderRadius: 50,
         marginTop: 20
     },

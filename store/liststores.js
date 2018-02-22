@@ -2,7 +2,7 @@ import { extendObservable } from 'mobx';
 import fetch from 'react-native-fetch-polyfill';
 
 const live = 'https://glacial-cliffs-13214.herokuapp.com';
-const develop = 'http://192.168.100.4:8000';
+const develop = 'http://192.168.100.3:8000';
 const timeout = 5 * 1000;
 
 class ObservableListStore {
@@ -28,12 +28,13 @@ class ObservableListStore {
         });
     }
 
-    addStore(name, address, topic, clb) {
+    addStore(name, address, topic, token, clb) {
         let data = {name, address, topic};    
 
         fetch(`${develop}/api/data/add-store`, { 
             method: "POST",                     
             headers: {
+                'Authorization': `security ${token}`,
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },    
@@ -88,12 +89,13 @@ class ObservableListStore {
         });
     }
 
-    saveSchedule(clb, {...myData}) {
+    saveSchedule(clb, token, {...myData}) {
         let datas = myData;
         
         fetch(`${develop}/api/data/add-schedule`, {
             method: 'POST',
             headers: {
+                'Authorization': `security ${token}`,
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
@@ -115,12 +117,13 @@ class ObservableListStore {
         });       
     }
 
-    updateSchedule(clb, item, {...myData}) {
+    updateSchedule(clb, item, token, {...myData}) {
         let datas = myData;
         
         fetch(`${develop}/api/data/update-schedule/${item}`, {
             method: 'PUT',
             headers: {
+                'Authorization': `security ${token}`,
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
@@ -142,9 +145,12 @@ class ObservableListStore {
         });       
     }
 
-    deleteOneStore(item, topic, clb) {
+    deleteOneStore(item, topic, token, clb) {
         fetch(`${develop}/api/data/delete-store/${item}/${topic}`, {
-            method: 'delete'
+            method: 'DELETE',
+            headers: {
+                'Authorization': `security ${token}`
+              }
         }, {timeout: timeout})
         .then(res => res.json())  
         .then((data) => {
@@ -159,6 +165,56 @@ class ObservableListStore {
         })
         .catch(error => {
             clb(error);
+        });
+    }
+
+    loginUser(username, password, clb ) {
+        let data = {username, password};    
+
+        fetch(`${develop}/api/data/login`, { 
+            method: "POST",                     
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },    
+                    
+            body: JSON.stringify(data)
+        }, {timeout: timeout}) 
+        .then((res) => res.json())
+        .then((data) => {
+            if(data.error) {
+                clb(data);
+            } else {
+                clb(data);                                
+            };
+         })
+        .catch(error => {            
+            clb('TypeError: Network request failed');
+        });
+    }
+
+    registerUser(clb, {...myData} ) {
+        let data = myData;    
+
+        fetch(`${develop}/api/data/register`, { 
+            method: "POST",                     
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },    
+                    
+            body: JSON.stringify(data)
+        }, {timeout: timeout}) 
+        .then((res) => res.json())
+        .then((data) => {
+            if(data.error) {
+                clb(data);
+            } else {
+                clb(data);                                
+            };
+         })
+        .catch(error => {            
+            clb('TypeError: Network request failed');
         });
     }
 }

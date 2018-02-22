@@ -29,7 +29,7 @@ class AddStore extends React.Component {
             color:"#fff", 
         },
         headerStyle: {
-            backgroundColor: '#EF5350',
+            backgroundColor: '#EA6055',
         } 
     }
 
@@ -39,6 +39,8 @@ class AddStore extends React.Component {
     }
 
     addStore = () => {  
+        const { state } = this.props.navigation;
+
         let data = [
             this.state.name,
             this.state.address,
@@ -61,7 +63,7 @@ class AddStore extends React.Component {
             }
         } else {
             this.setState({saveStatus: 'Loading'})
-            this.props.store.addStore(...data, (msg) => {
+            this.props.store.addStore(...data, state.params.token, (msg) => {
                 if(msg.error) {
                     ToastAndroid.showWithGravityAndOffset(
                         msg.error,
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: 300,
         height: 50,
-        backgroundColor: '#EF5350',
+        backgroundColor: '#EA6055',
         borderRadius: 50,
         marginTop: 20
     },

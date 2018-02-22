@@ -1,9 +1,10 @@
 import React from 'react';
-import { ToastAndroid, View, StatusBar, StyleSheet, TouchableOpacity, TouchableHighlight, FlatList, ActivityIndicator, Text, SwipeableListView } from 'react-native';
+import { ToastAndroid, Alert, View, StatusBar, StyleSheet, TouchableOpacity, TouchableHighlight, AsyncStorage, FlatList, ActivityIndicator, Text, SwipeableListView } from 'react-native';
 import { Header, ListItem, SearchBar, List, Avatar } from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { observer, inject } from 'mobx-react/native';
+import { NavigationActions } from 'react-navigation';
 
 
 class Lists extends React.Component {
@@ -13,6 +14,7 @@ class Lists extends React.Component {
     this. state = {
       loading: false,
       refresh: false,
+      token: '',
       words: 'Please add a store' 
     }
   }
@@ -21,31 +23,80 @@ class Lists extends React.Component {
     const { params = {} } = navigation.state;
       return{
       title: 'Alfamart Stores',
+      headerTintColor: '#fff',
       headerRight:(
         <TouchableOpacity
-        onPress={() => params.searchStore()}
+        onPress={() => params.appLogout()}
         style={styles.seacrhBtn}>
-            <Icon name="ios-search" size={25} color="#fff" />
+            <Icon name="ios-log-in" size={25} color="#fff" />
         </TouchableOpacity>
     ),
       headerTitleStyle: { 
         color:"#fff", 
       },
       headerStyle: {
-        backgroundColor: '#EF5350',
+        backgroundColor: '#EA6055',
       } 
     }
   }
 
   componentDidMount() {
-    this.props.navigation.setParams({ searchStore: this._searchMode });
+    const {state} = this.props.navigation;  
+    this.props.navigation.setParams({ appLogout: this._logoutMode });
+    this.fetchData();
+    this._getToken();
   }
 
-  _searchMode = () => {
-    alert('Searching...');
+  _getToken = () => {
+    let author = ['username', 'token'];
+    AsyncStorage.multiGet(author, (error, result) => {
+      if(error) {
+          ToastAndroid.showWithGravityAndOffset(
+              'Error get token',
+              ToastAndroid.LONG,
+              ToastAndroid.BOTTOM,
+              10,
+              200
+          );
+      } else {
+          let token = result[1][1];
+          this.setState({token});
+      }
+    })       
+  }
+
+
+  _logoutMode = () => {
+  
+    Alert.alert(
+      'Confirmation',
+      'Are you sure want to logout ?',
+      [        
+        {text: 'Cancel', onPress: () => null, style: 'cancel'},
+        {text: 'OK', onPress: () => this._logOut()},
+      ],
+      { cancelable: false }
+    )
+  
+  }
+
+  _logOut = () => {    
+        let keys = ['username', 'token'];
+        AsyncStorage.multiRemove(keys, (err) => {
+          if(err) {
+            alert(err);
+          } else {
+            const resetAction = NavigationActions.reset({
+              index: 0,
+              actions: [NavigationActions.navigate({ routeName: 'Login' })],
+              });
+            this.props.navigation.dispatch(resetAction);
+          }
+        });
   }
 
   fetchData = () => {
+    this.setState({loading: true});
     this.props.store.fetchAll((msg) => {
       if(msg.error) {
         alert(msg.error)
@@ -55,15 +106,9 @@ class Lists extends React.Component {
           this.setState({loading: false, words: 'Network request failed'});
         } else {
           this.setState({loading: false, words: 'Please add a store'});
-          this.setState({loading: false});
         }
       }
     });
-  }
-
-  componentWillMount() {
-      this.setState({loading: true})
-      this.fetchData();
   }
 
   renderSeparator = () => {
@@ -83,10 +128,10 @@ class Lists extends React.Component {
     return(
         <View style={styles.activity}>
             <StatusBar
-                backgroundColor="#EF5350"
+                backgroundColor="#EA6055"
                 barStyle="light-content"
               />
-            <ActivityIndicator size="large" color="#EF5350" /> 
+            <ActivityIndicator size="large" color="#EA6055" /> 
             <Text style={{fontSize: 20, color: 'grey'}}>Loading...</Text>
         </View>
     )
@@ -118,7 +163,7 @@ class Lists extends React.Component {
   }
 
 	deleteRow(rowKey, topic) {
-    this.props.store.deleteOneStore(rowKey, topic, (msg) => {
+    this.props.store.deleteOneStore(rowKey, topic, this.state.token, (msg) => {
       if(msg.error) {
         this._callToast(msg.error);
       } else {
@@ -137,7 +182,7 @@ class Lists extends React.Component {
 
 
   render() { 
-    const { navigate } = this.props.navigation;
+    const { navigate, state } = this.props.navigation;
       if(this.state.loading) {
         return this.renderActivity();
       } else {
@@ -145,7 +190,7 @@ class Lists extends React.Component {
         <View style={styles.container}>
           <View style={styles.content}>
           <StatusBar
-            backgroundColor="#EF5350"
+            backgroundColor="#EA6055"
             barStyle="light-content"
           />
           {this.props.store.listStore.length == 0 ?          
@@ -157,7 +202,7 @@ class Lists extends React.Component {
               useFlatList
               data={this.props.store.listStore}
               renderItem={ (data, rowMap) => (
-                <TouchableHighlight underlayColor='#CFD8DC' style={styles.ListItem} onPress={() => navigate('StoreDetail', {id: data.item.id_store, name:data.item.name, topic:data.item.topic })}>
+                <TouchableHighlight underlayColor='#CFD8DC' style={styles.ListItem} onPress={() => navigate('Storedetail', {id: data.item.id_store, name:data.item.name, topic:data.item.topic, token:this.state.token })}>
                 <View style={styles.item}>                        
                   <Avatar
                       medium 
@@ -193,7 +238,7 @@ class Lists extends React.Component {
           />  
          }  
           </View>
-          <TouchableOpacity style={styles.FloatBtn} onPress={() => navigate('AddStore')}>
+          <TouchableOpacity style={styles.FloatBtn} onPress={() => navigate('Addstore', {token: this.state.token})}>
             <Icon name='ios-add' size={40} color='#fff'/>
           </TouchableOpacity>
         </View>
@@ -209,7 +254,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 50,
     height: 50,
-    backgroundColor: '#EF5350',
+    backgroundColor: '#EA6055',
     borderRadius: 50,
     bottom: 10,
     right: 10,
@@ -274,7 +319,7 @@ const styles = StyleSheet.create({
 		width: 75
 	},
 	backRightBtnRight: {
-		backgroundColor: '#EF5350',
+		backgroundColor: '#EA6055',
 		right: 0
   },
   welcome: {

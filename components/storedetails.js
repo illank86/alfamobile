@@ -34,7 +34,7 @@ class StoreDetail extends React.Component {
                  color:"#fff", 
              },
              headerStyle: {
-                 backgroundColor: '#EF5350',
+                 backgroundColor: '#EA6055',
              } 
         }    
     }
@@ -87,13 +87,13 @@ class StoreDetail extends React.Component {
 
     _editMode = () => {
         const { state, navigate } = this.props.navigation;
-        navigate('AddSchedule', {id: state.params.id, name: state.params.name, topic: state.params.topic})
+        navigate('Addschedule', {id: state.params.id, name: state.params.name, topic: state.params.topic, token: state.params.token})
     }
 
     renderActivity = () => {
         return(
             <View style={styles.activity}>
-                <ActivityIndicator size="large" color="#EF5350" /> 
+                <ActivityIndicator size="large" color="#EA6055" /> 
             </View>
         )
     }
