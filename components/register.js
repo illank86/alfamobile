@@ -13,7 +13,8 @@ class RegisterScreen extends React.Component{
             email: '',
             password: '',
             passwordMatch: '',
-            signupWord: 'SIGN UP'
+            signupWord: 'SIGN UP',
+            showPass: true
         }
     }
 
@@ -23,6 +24,9 @@ class RegisterScreen extends React.Component{
           title: 'Register',
           header: null
         }
+    }
+    _showPwd = () => {
+        this.setState({showPass: !this.state.showPass})
     }
 
     onRegister = () => {
@@ -66,56 +70,81 @@ class RegisterScreen extends React.Component{
       
                 <View style={styles.forms}> 
                     <View style={styles.inputView}>
-                        <Icon name="ios-person-outline" size={25} color="#fff" />
-                        <TextInput
-                            style = {styles.textInputs} 
-                            onChangeText = {username => this.setState({username})}
-                            value = {this.state.username}
-                            underlineColorAndroid = 'transparent'
-                            placeholder = 'Username'
-                        />
+                        <View style={styles.inputIcon}>
+                            <Icon name="ios-person-outline" size={25} color="#fff" />
+                        </View>
+                        <View style={styles.txtInput}>    
+                            <TextInput
+                                style = {styles.textInputs} 
+                                onChangeText = {username => this.setState({username})}
+                                value = {this.state.username}
+                                underlineColorAndroid = 'transparent'
+                                placeholder = 'Username'
+                            />
+                        </View>
                     </View>
                     <View style={styles.inputView}>
-                        <Icon name="ios-contact-outline" size={25} color="#fff" />
-                        <TextInput
-                            style ={styles.textInputs} 
-                            onChangeText = {name => this.setState({name})}
-                            value = {this.state.name}
-                            underlineColorAndroid = 'transparent'
-                            placeholder = 'Name'
-                        />
+                        <View style={styles.inputIcon}>
+                            <Icon name="ios-contact-outline" size={20} color="#fff" />
+                        </View>
+                        <View style={styles.txtInput}>
+                            <TextInput
+                                style ={styles.textInputs} 
+                                onChangeText = {name => this.setState({name})}
+                                value = {this.state.name}
+                                underlineColorAndroid = 'transparent'
+                                placeholder = 'Name'
+                            />
+                        </View>
                     </View>
                     <View style={styles.inputView}>
-                        <Icon name="ios-mail-outline" size={25} color="#fff" />
-                        <TextInput
-                            style = {styles.textInputs} 
-                            onChangeText = {email => this.setState({email})}
-                            value = {this.state.email}
-                            underlineColorAndroid = 'transparent'
-                            placeholder = 'Email'
-                        />
+                        <View style={styles.inputIcon}>
+                            <Icon name="ios-mail-outline" size={20} color="#fff" />
+                        </View>
+                        <View style={styles.txtInput}>
+                            <TextInput
+                                style = {styles.textInputs} 
+                                onChangeText = {email => this.setState({email})}
+                                value = {this.state.email}
+                                underlineColorAndroid = 'transparent'
+                                placeholder = 'Email'
+                            />
+                        </View>
                     </View>
                     <View style={styles.inputView}>
-                        <Icon name="ios-key-outline" size={25} color="#fff" />
-                        <TextInput
-                            style ={styles.textInputs} 
-                            onChangeText = {password => this.setState({password})}
-                            value = {this.state.password}
-                            underlineColorAndroid = 'transparent'
-                            placeholder = 'Password'
-                            secureTextEntry = {true}
-                        />
+                        <View style={styles.inputIcon}>
+                            <Icon name="ios-key-outline" size={20} color="#fff" />
+                        </View>
+                        <View style={styles.txtInput}>
+                            <TextInput
+                                style ={styles.textInputs} 
+                                onChangeText = {password => this.setState({password})}
+                                value = {this.state.password}
+                                underlineColorAndroid = 'transparent'
+                                placeholder = 'Password'
+                                secureTextEntry = {this.state.showPass}
+                            />
+                        </View>
+                        <View>
+                            <TouchableOpacity onPress={this._showPwd}>
+                                {this.state.showPass ? <Icon name="ios-eye-outline" size={25} color="#fff" /> : <Icon name="ios-eye-off-outline" size={25} color="#fff" />}
+                            </TouchableOpacity> 
+                        </View>     
                     </View>
                     <View style={styles.inputView}>
-                        <Icon name="ios-key-outline" size={25} color="#fff" />
-                        <TextInput
-                            style = {styles.textInputs} 
-                            onChangeText = {passwordMatch => this.setState({passwordMatch})}
-                            value = {this.state.passwordMatch}
-                            underlineColorAndroid = 'transparent'
-                            placeholder = 'Confirm Password'
-                            secureTextEntry = {true}
-                        />
+                        <View style={styles.inputIcon}>
+                            <Icon name="ios-key-outline" size={20} color="#fff" />
+                        </View>
+                        <View style={styles.txtInput}>
+                            <TextInput
+                                style = {styles.textInputs} 
+                                onChangeText = {passwordMatch => this.setState({passwordMatch})}
+                                value = {this.state.passwordMatch}
+                                underlineColorAndroid = 'transparent'
+                                placeholder = 'Confirm Password'
+                                secureTextEntry = {this.state.showPass}
+                            />
+                        </View>
                     </View>
                     <TouchableOpacity onPress={this.onRegister} style={styles.loginBtn}>
                         <Text style={styles.loginTxt}>{this.state.signupWord}</Text>
@@ -145,12 +174,21 @@ const styles = {
     inputView: {        
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        width: 290, 
+        width: 300, 
         borderRadius: 50,
         backgroundColor: '#424242',
-        paddingLeft: 5,
+        paddingLeft: 15,
         marginBottom: 10,
+    },
+    inputIcon: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
+    txtInput: {
+        paddingLeft: 5,
+        marginLeft: 1,
+        width: 230, 
     },
     texts: {
         fontSize: 20,

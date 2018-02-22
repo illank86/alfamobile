@@ -128,7 +128,7 @@ const styles = {
     },
     viewCont: {
         flex: 1,
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
     },
     texts: {
         fontSize: 15,
@@ -137,7 +137,7 @@ const styles = {
     },
     buttonView: {
         justifyContent: 'space-around',        
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     buttonReg: {
         alignItems: 'center',

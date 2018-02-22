@@ -110,7 +110,7 @@ class LoginScreen extends React.Component{
                         </View>
                         <View>
                             <TouchableOpacity onPress={this._showPwd}>
-                                <Icon name="ios-eye-outline" size={30} color="#fff" />
+                                {this.state.showPass ? <Icon name="ios-eye-outline" size={25} color="#fff" /> : <Icon name="ios-eye-off-outline" size={25} color="#fff" />}
                             </TouchableOpacity> 
                         </View>     
                        
@@ -122,8 +122,8 @@ class LoginScreen extends React.Component{
                 </View>     
                 <View style={styles.footer}>
                     <Text style={styles.textFooter}>Don't have an account?</Text>
-                    <TouchableOpacity>
-                        <Text style={[styles.textFooter, styles.SignupTxt]}> Signup</Text>
+                    <TouchableOpacity onPress={() => navigate('Register')}>
+                        <Text style={[styles.textFooter, styles.SignupTxt]}> Sign up</Text>
                     </TouchableOpacity>
                 </View> 
             </View>
@@ -154,17 +154,17 @@ const styles = {
         borderRadius: 50,
         backgroundColor: '#424242',
         marginBottom: 10,
-        paddingLeft: 15,                       
+        paddingLeft: 15,
     },
     inputIcon: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-start',       
     },
     txtInput: {
-        paddingLeft: 10,
-        marginLeft: 1
-        
+        paddingLeft: 5,
+        marginLeft: 1,
+        width: 230, 
     },
     texts: {
         fontSize: 20,
@@ -209,8 +209,13 @@ const styles = {
         justifyContent: 'center',
     },
     SignupTxt: {
+        fontSize: 16,
         fontWeight: 'bold',
-        color: '#BBDEFB'
+        color: '#fff'
+    },
+    rightIcon: {
+        marginRight: 10,
+        marginLeft: 8
     }
 }
 
