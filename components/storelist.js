@@ -1,21 +1,22 @@
 import React from 'react';
-import { ToastAndroid, Alert, View, StatusBar, StyleSheet, TouchableOpacity, TouchableHighlight, AsyncStorage, FlatList, ActivityIndicator, Text, SwipeableListView } from 'react-native';
-import { Header, ListItem, SearchBar, List, Avatar } from 'react-native-elements';
+import { ToastAndroid, Alert, StyleSheet, View, TouchableHighlight, TouchableOpacity, AsyncStorage, FlatList, ActivityIndicator, Text } from 'react-native';
+import { ListItem, List, Avatar } from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { observer, inject } from 'mobx-react/native';
 import { NavigationActions } from 'react-navigation';
 
+const a = 0;
 
 class Lists extends React.Component {
   constructor(props) {
     super(props);
 
-    this. state = {
-      loading: false,
+    this.state = {
+      loading: true,
       refresh: false,
       token: '',
-      words: 'Please add a store' 
+      words: 'Please add a store'
     }
   }
 
@@ -39,35 +40,28 @@ class Lists extends React.Component {
       } 
     }
   }
-
+  
   componentDidMount() {
     const {state} = this.props.navigation;  
     this.props.navigation.setParams({ appLogout: this._logoutMode });
+    this.setState({token: state.params.token});
     this.fetchData();
-    this._getToken();
   }
 
-  _getToken = () => {
-    let author = ['username', 'token'];
-    AsyncStorage.multiGet(author, (error, result) => {
-      if(error) {
-          ToastAndroid.showWithGravityAndOffset(
-              'Error get token',
-              ToastAndroid.LONG,
-              ToastAndroid.BOTTOM,
-              10,
-              200
-          );
-      } else {
-          let token = result[1][1];
-          this.setState({token});
-      }
-    })       
+  _deleteConfirm = (rowKey, topic, name) => {
+    Alert.alert(
+      'Confirmation',
+      `Are you sure want to delete ${name} ?`,
+      [        
+        {text: 'Cancel', onPress: () => null, style: 'cancel'},
+        {text: 'OK', onPress: () => this.deleteRow(rowKey, topic)},
+      ],
+      { cancelable: false }
+    )
   }
 
 
-  _logoutMode = () => {
-  
+  _logoutMode = () => {  
     Alert.alert(
       'Confirmation',
       'Are you sure want to logout ?',
@@ -95,17 +89,20 @@ class Lists extends React.Component {
         });
   }
 
-  fetchData = () => {
-    this.setState({loading: true});
+
+  fetchData = () => {    
     this.props.store.fetchAll((msg) => {
       if(msg.error) {
         alert(msg.error)
-      } else {
+      } else { 
+        this.setState({loading: false});          
         if(msg == 'TypeError: Network request failed') {
-          alert(msg)
-          this.setState({loading: false, words: 'Network request failed'});
+          alert(msg);      
+          this.setState({words:'Network request failed.'});
         } else {
-          this.setState({loading: false, words: 'Please add a store'});
+          if(this.props.store.listStore.length == 0) {   
+            this.setState({words: 'Please add a store.'});
+          }
         }
       }
     });
@@ -127,10 +124,6 @@ class Lists extends React.Component {
   renderActivity = () => {
     return(
         <View style={styles.activity}>
-            <StatusBar
-                backgroundColor="#EA6055"
-                barStyle="light-content"
-              />
             <ActivityIndicator size="large" color="#EA6055" /> 
             <Text style={{fontSize: 20, color: 'grey'}}>Loading...</Text>
         </View>
@@ -180,63 +173,80 @@ class Lists extends React.Component {
     
   }
 
+  _renderSwipe = () => {
+    const { navigate, state } = this.props.navigation;
+    return(
+        <SwipeListView
+          useFlatList
+          data={this.props.store.listStore}
+          renderItem={ (data, rowMap) => (
+            <TouchableHighlight underlayColor='#CFD8DC' style={styles.ListItem} onPress={() => navigate('Storedetail', {id: data.item.id_store, name:data.item.name, topic:data.item.topic, token:this.state.token })}>
+            <View style={styles.item}>                        
+              <Avatar
+                  medium 
+                  rounded                     
+                  source={require('../assets/icons.png')}
+                  onPress={() => alert("Works!")}
+                  activeOpacity={0.7}
+                />
+              <View style={styles.itemText}>  
+                <Text style={styles.name}>{data.item.name}</Text>
+                <Text style={styles.address}>{data.item.address}</Text> 
+              </View>                    
+            </View>
+            </TouchableHighlight>
+          )}
+          keyExtractor = {data => data.id_store}
+          ItemSeparatorComponent={this.renderSeparator}            
+          renderHiddenItem={ (data, rowMap) => (
+            <View style={styles.rowBack}>
+              <TouchableOpacity style={[styles.backRightBtn, styles.editBtn]} onPress={() => navigate('UpdateStore', {id:data.item.id_store, name:data.item.name, address:data.item.address, topic:data.item.topic, token: this.state.token })}>
+                  <Icon                              
+                    name='ios-create-outline'                        
+                    color='white'
+                    size={30}
+                  />
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ () => this._deleteConfirm(data.item.id_store, data.item.topic, data.item.name) }>
+                  <Icon                              
+                    name='ios-trash'                        
+                    color='white'
+                    size={30}
+                  />
+              </TouchableOpacity> 
+            </View>               
+          )}
+          refreshing={this.state.refresh}
+          onRefresh={this.onRefresh}
+          leftOpenValue={75}
+          rightOpenValue={-75}
+          onRowOpen={(rowKey, rowMap) => {
+            setTimeout(() => {
+                rowMap[rowKey] && rowMap[rowKey].closeRow()
+            }, 2000)
+          }}
+      />  
+    )
+  }
+
+  _renderWords = () => {
+    return(
+      <TouchableOpacity style={styles.activity} onPress={()=>{this.fetchData(); this.setState({loading: true})}}>
+        <Text style={styles.welcome}>{this.state.words}</Text>
+      </TouchableOpacity>          
+    )
+  }
+
 
   render() { 
-    const { navigate, state } = this.props.navigation;
-      if(this.state.loading) {
-        return this.renderActivity();
-      } else {
+    const { navigate, state } = this.props.navigation;  
+    if(this.state.loading) {      
+      return this.renderActivity();
+    } else {
       return (
         <View style={styles.container}>
           <View style={styles.content}>
-          <StatusBar
-            backgroundColor="#EA6055"
-            barStyle="light-content"
-          />
-          {this.props.store.listStore.length == 0 ?          
-            <TouchableOpacity style={styles.activity} onPress={()=>{this.fetchData(); this.setState({loading: true})}}>
-              <Text style={styles.welcome}>{this.state.words}</Text>
-            </TouchableOpacity>          
-            :
-            <SwipeListView
-              useFlatList
-              data={this.props.store.listStore}
-              renderItem={ (data, rowMap) => (
-                <TouchableHighlight underlayColor='#CFD8DC' style={styles.ListItem} onPress={() => navigate('Storedetail', {id: data.item.id_store, name:data.item.name, topic:data.item.topic, token:this.state.token })}>
-                <View style={styles.item}>                        
-                  <Avatar
-                      medium 
-                      rounded                     
-                      source={require('../assets/icons.png')}
-                      onPress={() => alert("Works!")}
-                      activeOpacity={0.7}
-                    />
-                  <View style={styles.itemText}>  
-                    <Text style={styles.name}>{data.item.name}</Text>
-                    <Text style={styles.address}>{data.item.address}</Text> 
-                  </View>                    
-                </View>
-                </TouchableHighlight>
-              )}
-              keyExtractor = {data => data.id_store}
-              ItemSeparatorComponent={this.renderSeparator}            
-              renderHiddenItem={ (data, rowMap) => (
-                <View style={styles.rowBack}>
-                    <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(data.item.id_store, data.item.topic) }>
-                      <Icon                              
-                        name='ios-trash'                        
-                        color='white'
-                        size={30}
-                      />
-                    </TouchableOpacity>
-                </View>
-              )}
-              refreshing={this.state.refresh}
-              onRefresh={this.onRefresh}
-              disableRightSwipe
-              rightOpenValue={-75}
-          />  
-         }  
+            {this.props.store.listStore.length == 0 ? this._renderWords() : this._renderSwipe()}
           </View>
           <TouchableOpacity style={styles.FloatBtn} onPress={() => navigate('Addstore', {token: this.state.token})}>
             <Icon name='ios-add' size={40} color='#fff'/>
@@ -304,7 +314,7 @@ const styles = StyleSheet.create({
   },
   rowBack: {
 		alignItems: 'center',
-		backgroundColor: '#DDD',
+		backgroundColor: '#3c3c3c',
 		flex: 1,
 		flexDirection: 'row',
 		justifyContent: 'space-between',
@@ -328,6 +338,10 @@ const styles = StyleSheet.create({
   },
   seacrhBtn: {
     marginRight: 20
+  },
+  editBtn: {
+		backgroundColor: '#00796B',
+	  left: 0
   }
 
 });

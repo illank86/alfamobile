@@ -63,6 +63,7 @@ class RegisterScreen extends React.Component{
         return(
             <View style={styles.container}>          
                 <StatusBar
+                    backgroundColor= '#EA6055'
                     barStyle="light-content"/>
                 <View style={styles.logoView}>
                     <Text style={styles.Titles}>
@@ -166,12 +167,13 @@ const styles = {
         flex: 0.5,
         alignItems: 'center',
         justifyContent: 'center',
+        width: '100%'
 
     },
     Titles: {
         fontSize: 30,
         color: '#fff',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     inputView: {        
         flexDirection: 'row',

@@ -20,7 +20,7 @@ class ObservableListStore {
                 clb(stores)
             } else {
                 this.listStore = stores;
-                clb(false)
+                clb(store)
             }  
         })
         .catch(error => {            
@@ -33,6 +33,35 @@ class ObservableListStore {
 
         fetch(`${develop}/api/data/add-store`, { 
             method: "POST",                     
+            headers: {
+                'Authorization': `security ${token}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },    
+                    
+            body: JSON.stringify(data)
+        }, {timeout: timeout}) 
+        .then((res) => res.json())
+        .then((data) => {
+            if(data.error) {
+                clb(data);
+            } else {
+                clb(data);                
+                this.fetchAll((msg) => {
+                    return null
+                });                  
+            };
+         })
+        .catch(error => {            
+            clb('TypeError: Network request failed');
+        });
+    }
+
+    updateStore(id, {...myData}, token, clb) {
+        let data = myData;   
+
+        fetch(`${develop}/api/data/update-store/${id}`, { 
+            method: "PUT",                     
             headers: {
                 'Authorization': `security ${token}`,
                 'Accept': 'application/json',

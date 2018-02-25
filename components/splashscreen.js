@@ -23,6 +23,10 @@ export default class SplashScreen extends React.Component{
     }
 
     componentDidMount() { 
+        this._getData();
+    }
+
+    _getData = () => {
         let author = ['username', 'token'];
         AsyncStorage.multiGet(author, (error, result) => {
             if(error) {
@@ -35,12 +39,12 @@ export default class SplashScreen extends React.Component{
                 );
             } else {
                 let username = result[0][1];
-                let token = result[1][1];
-                this.setState({username, token});
-                
-                if(this.state.token === null) {
+                let token = result[1][1];              
+                this._setToken.bind(this, username, token); 
+
+                if(token === null) {
                     this._setTime();                           
-                } else {           
+                } else {
                     setTimeout(this._navigateToHome.bind(this, username, token), 3000);
                 }
             }
@@ -49,6 +53,10 @@ export default class SplashScreen extends React.Component{
 
     _setTime = () => { 
         setTimeout(this._setState, 3000);
+    }
+
+    _setToken = (username, token) => {
+        this.setState({username, token}); 
     }
 
     _setState = () => {
@@ -97,13 +105,10 @@ export default class SplashScreen extends React.Component{
     render() {        
         return(
             <View style={styles.container}> 
-                <StatusBar
-                    backgroundColor= '#EA6055'
-                    barStyle="light-content"/> 
-                    <View style={styles.logo}>
-                        <Image style={styles.Titles} source={require('../assets/logo.png')}/>
-                    </View>
-                    {this.state.loading ? this._renderActivity() : this._renderButton()}
+                <View style={styles.logo}>
+                    <Image style={styles.Titles} source={require('../assets/logo.png')}/>
+                </View>
+                {this.state.loading ? this._renderActivity() : this._renderButton()}
             </View>
         )
     }

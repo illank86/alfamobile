@@ -49,8 +49,6 @@ const StatusItem = (props) => {
 const styles = {
     container: {
         flex: 0.20,
-        // alignItems: 'center',
-        // justifyContent: 'center',
         backgroundColor: '#fff',
         elevation: 15
     },

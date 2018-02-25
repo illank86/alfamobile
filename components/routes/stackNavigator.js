@@ -7,6 +7,7 @@ import Lists from '../storelist';
 import AddStore from '../addstore';
 import StoreDetail from '../storedetails';
 import AddSchedule from '../addschedule';
+import UpdateStore from '../updateStore'
 
 const MainFlow = StackNavigator({
   Home: {
@@ -20,6 +21,9 @@ const MainFlow = StackNavigator({
   },
   Addschedule: {
     screen: AddSchedule
+  },
+  UpdateStore: {
+    screen: UpdateStore
   },
 
   Splash: {

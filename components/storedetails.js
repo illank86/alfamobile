@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToastAndroid, Text, StyleSheet, View, FlatList, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { ToastAndroid, Text, StatusBar, StyleSheet, View, FlatList, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import { Card, ListItem, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';

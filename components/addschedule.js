@@ -59,7 +59,8 @@ class AddSchedule extends React.Component {
         const { state } = this.props.navigation;
         let datas;
         if(this.state.komponen === 0) {
-            alert('Please select device !')
+            alert('Please select device !');
+            this.setState({disableBtn: false}); 
         } else {   
             if(this.state.all) {
                 datas = {

@@ -1,9 +1,16 @@
 {
   "expo": {
+    "name": "Alfamart",
+    "icon": "./assets/icon.png",
+    "version": "1.0.0",
+    "slug": "com-alfamart-proj",
     "sdkVersion": "23.0.0",
     "androidStatusBar": {
       "barStyle": "dark-content"
     },
-    "orientation": "portrait"
+    "orientation": "portrait",
+    "android": {
+      "package": "com.delank.alfaproject"
+    }
   }
 }

@@ -1,6 +1,8 @@
 {
   "name": "alfa",
   "version": "0.1.0",
+  "descripton": "Alfa project",
+  "author": "Nur Ilham Iskandar",
   "private": true,
   "devDependencies": {
     "babel-plugin-transform-decorators-legacy": "^1.3.4",

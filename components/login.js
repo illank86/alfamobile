@@ -54,7 +54,7 @@ class LoginScreen extends React.Component{
             
                             const resetAction = NavigationActions.reset({
                                 index: 0,
-                                actions: [NavigationActions.navigate({ routeName: 'Home' })],
+                                actions: [NavigationActions.navigate({ routeName: 'Home', params: {username: msg.username, token: msg.token }})],
                             });
                             this.props.navigation.dispatch(resetAction);
                         }
@@ -73,6 +73,7 @@ class LoginScreen extends React.Component{
         return(
             <View style={styles.container}>          
                 <StatusBar
+                    backgroundColor= '#EA6055'
                     barStyle="light-content"/>
                 <View style={styles.logoView}>
                     <View style={styles.logo}>
